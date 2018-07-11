@@ -1,0 +1,16 @@
+;发微博
+mblog.add_succ="100000"
+mblog.add_error="100001"
+;sass
+sass="100027"
+sass_error="100028"
+;操作成功
+succ = "100000"
+error ="100001"
+not_login = "100002"
+param.error = "100040"
+
+ajax_allow_host.1="weibo.com"
+ajax_allow_host.2="weibo.cn"
+ajax_allow_host.3="energy.tv.weibo.cn"
+

@@ -1,0 +1,117 @@
+<!-- top -->
+<section class="lv_intro card">
+        <div class="lv_banner">
+            <div class="lv_head_top">
+                <div class="m-img-box weibo_profile" data-href="http://m.weibo.cn/u/<?=$star['uid']?>" data-scheme="sinaweibo://userinfo?uid=<?=$star['uid']?>">
+                    <img src="<?=$star['avatar_large']?>">
+                    <div class="lv_info_bar">
+                    <span>NO.<?=$star['rank']?></span>
+                    </div>
+                </div>
+            </div>
+            <div class="lv_head_info">
+            <em><?=$star['name_format']?></em>
+            <p>
+                <?php echo $energy_info['fans_star_energy_brief'];?>
+            </p>
+                <?php if($star['uid'] != $uid):?>
+                    <p node-type="follow_btn_top">
+                    <a href="javascript:;" class="m-btn m-btn-white m-add-box m-add-text" ontouchstart="" action-data-suid="<?=$star['uid']?>" action-type="follow_btn" node-type="star_top">
+                                <i class="m-font m-font-plus"></i>关注
+                        </a>
+                    </p>
+                <?php endif;?>
+            </div>
+            <div class="blur"> <img src="<?=$star['rank_first_pic']?>"> </div>
+        </div>
+</section>
+<!-- top end -->
+
+<!-- energy_info -->
+<?php
+$action_data = json_encode(array('star_uid' => $star['uid'], 'name' => $star['screen_name'], 'img' => $star['avatar_large'], 'verified_class' => $star['verified_class'] ));
+?>
+
+<section class="out_stage"><div class="card card11 ctype-1">
+            <div class="card-list">
+            <div class="card m-panel card25 fans_numb_energy" action-data='<?=$action_data?>'>
+                    <div class="card-wrap">
+                        <div class="fans_area">
+                            <div class="fans_numb">
+                                <div class="card-wrap">
+                                    <div class="card-main"> 
+                                        <div class="m-box">
+                                            <div class="m-box-col m-box-dir m-box-center">
+                                                <div class="m-text-box">
+                                                <h3 class="m-text-cut">节目提及 排名 <i><?=$star['mention_rank']?></i>/<?=$star['rank_count']?></h3>
+                                                <h4 class="m-text-cut"><i style="width:<?=$star['mention_width']?>%"></i></h4>
+                                                </div>
+                                            </div>
+                                            <div class="box-right m-box-center-a m-numb">
+                                            <span><?=$star['mention']?></span>
+                                            </div>
+                                            <div class="box-right m-box-center-a ">
+											<a action-type="sendwb_btn"  href="javascript:;" class="m-btn m-btn-orange" ontouchstart=""><?=($isoppo ? '拍照' : '发微博')?></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-wrap">
+                                    <div class="card-main"> 
+                                        <div class="m-box">
+                                            <div class="m-box-col m-box-dir m-box-center">
+                                                <div class="m-text-box">
+                                                <h3 class="m-text-cut">节目互动 排名 <i><?=$star['rt_rank']?></i>/<?=$star['rank_count']?></h3>
+                                                <h4 class="m-text-cut"><i style="width:<?=$star['rt_width']?>%"></i></h4>
+                                                </div>
+                                            </div>
+                                            <div class="box-right m-box-center-a m-numb">
+                                            <span><?=$star['rt']?></span>
+                                            </div>
+                                            <div class="box-right m-box-center-a ">
+                                                <a href="javascript:;" class="m-btn m-btn-orange" action-type="rt_btn" ontouchstart="">去转发</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-wrap">
+                                    <div class="card-main"> 
+                                        <div class="m-box">
+                                            <div class="m-box-col m-box-dir m-box-center">
+                                                <div class="m-text-box">
+                                                <h3 class="m-text-cut"><?=$energy_info['spt_label']?> 排名 <i><?=$star['spt_rank']?></i>/<?=$star['rank_count']?></h3>
+                                                <h4 class="m-text-cut"><i style="width:<?=$star['spt_width']?>%"></i></h4>
+                                                </div>
+                                            </div>
+                                            <div class="box-right m-box-center-a m-numb">
+                                            <span><?=$star['spt']?></span>
+                                            </div>
+                                            <div class="box-right m-box-center-a ">
+                                            <a href="javascript:;" class="m-btn m-btn-orange" action-type="spt_btn" ontouchstart=""><?=$energy_info['spt_btn_label']?></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-wrap">
+                                    <div class="m-tab">
+                                        <div class="m-box">
+                                            <span class="m-box-col tit">趋势</span>
+                                            <span class="m-box-col"  action-type="tab_check" action-data="type=trend_hours&count=24" ><i class="check m-cur">24小时</i></span>
+                                            <span class="m-box-col " action-type="tab_check" action-data="type=trend_days&count=7"><i class="check ">7日</i></span>
+                                            <span class="m-box-col" action-type="tab_check" action-data="type=trend_days&count=30"><i class="check ">30天</i></span>
+                                            <span class="m-box-col"  action-type="tab_check" action-data="type=trend_days&count=<?=$day_count?>"><i class="check ">累计</i></span>
+                                        </div>
+                                    </div>
+                                    <div node-type="canvas" class="chart" style="width:100%;height:200px">
+                                        
+                                </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+    </div></div></section>
+<!-- end_energy_info -->
+
+

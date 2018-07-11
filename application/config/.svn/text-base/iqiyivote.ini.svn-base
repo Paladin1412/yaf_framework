@@ -1,0 +1,13 @@
+platform_api_source = '3635067027'
+platform_api_appsecre = 'a8a37ac93f2e31db8c105b22b35df57b'
+[biz]
+home_url = 'http://energy.tv.weibo.cn/iqiyivote'
+
+;统计相关
+[stats]
+;suda的key
+suda.index.key = 'weibo_the_rap_of_china'
+;爱奇艺投票入口
+suda.index.values.entrance = 'aiqiyi_entrance'
+;首页-banner图点击   %d:序号
+suda.index.values.banner = 'home_banner_%d'

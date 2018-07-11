@@ -1,0 +1,16 @@
+<?php
+/**
+ * 自渲染转发页面
+ * 微博 能量榜
+ * @author xiaoli25 
+ */
+class RepostController extends AbstractController {
+    public $authorize = self::MUST_LOGIN;
+    public $init_viewer = true; 
+
+    public function indexAction() {
+        Comm_Context::set('is_pc', $this->is_pc);
+        $page = new Page_Repost();
+        $this->render_page($page);
+    }
+}

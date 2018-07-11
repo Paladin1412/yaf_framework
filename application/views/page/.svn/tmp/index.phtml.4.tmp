@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta content="telephone=no" name="format-detection" />
+    <title><?=$energy_info['name'] . $energy_info['rank_label']?></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0,user-scalable=no" >
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$base_url['css']?>css/tv_challenge/energy.css?version=<?=$g_version_css?>">
+    <script type="text/javascript" src="http://img.t.sinajs.cn/t4/appstyle/operators_special/script/red_2016_H5/ios.js?version=<?=$g_version_js?>"></script>
+</head>
+
+<body class="energy team">
+    <section class="en_intro">
+
+    <!-- top1_info -->
+    <?php if (!empty($top1_info[$rank_type])) :?>
+		<div class="banner">
+            <img src="<?=$top1_info[$rank_type]['rank_first_pic']?>" node-type="top1_rank_first_pic">
+			<div class="b_title">
+                <span node-type="top1_screen_name"><?=$top1_info[$rank_type]['screen_name']?>占领了封面</span>
+			</div>
+			<div class="en_numb">
+                <h2><?=$energy_info['name_in_pic']?></h2>
+                <p >累计<?=$energy_info['energy_label']?></p>
+                <span node-type="top1_energy_format"><?=$top1_info[$rank_type]['energy_format']?></span>
+			</div>
+			<div class="b_tip clearfix">
+				<p><span node-type="live_timer"></span>分钟后更新</p>
+                <a href="<?=$rule_url?>">榜单规则<i class="m-font m-font-arrow-right"></i></a>
+			</div>
+            <!--判断是否多组-->
+            <?php if ($rank_type == 'teams'):?>
+            <div class="b_tabmenu">
+            <span class="active" node-type="teams_tab" action-data="teams"><?=$energy_info['tab_team']?></span>
+            <span node-type="players_tab" action-data="players"><?=$energy_info['tab_star']?></span>
+            </div>
+            <?php endif;?>
+            <!--多组end-->
+		</div>
+    <?php endif;?>
+    <!-- top1_info_end -->
+
+    <!-- intro -->
+        <?php
+			$brief = $rank_type == 'teams' ? $energy_info['team_brief'] : $energy_info['brief'];
+            if (mb_strlen($brief, 'UTF-8') > 80) {
+                $brief = mb_substr($energy_info['brief'], 0, 80, 'UTF-8') . '...';
+            }
+        ?>
+        <?php if (!empty($brief)):?>
+        <p class="intro m-panel" node-type="brief"><?=$brief?></p>
+        <?php endif;?>
+    <!-- intro_end -->
+    </section>
+
+    <!-- ad 广告位  -->
+	<?php if(!empty($energy_info['ad_config'])):?>
+		<?php $energy_info['ad_config'] = array_slice($energy_info['ad_config'], 0, 4);?>
+    <section class="ad">
+		<div class="slide-content swiper-container">
+			<div class="slide-wrapper swiper-wrapper">
+			<?php foreach ($energy_info['ad_config'] as $ad):?>
+				<div class="slide-box swiper-slide">
+				<a href="javascript:void(0);"><img src="<?=$ad['pic']?>" jump="<?=$ad['jump']?>" action-type="img_ad" ></a>
+				</div>
+			<?php endforeach;?>
+			</div>
+			<div class="slide-page swiper-pagination"></div>
+		</div>
+	</section>
+	<?php endif;?>
+    <!-- ad 广告位 end  -->
+
+    <!-- 多组card -->
+    <?php if ($rank_type == 'teams') {
+        if (count($teams) == 2) {
+            include TPLPATH . '/pl/pk_team.phtml';
+        } else {
+            include TPLPATH . '/pl/team_box.phtml';
+        }
+    }
+    ?>
+    <!--多组card end -->
+    
+
+    <?php  $rank_info = $players['rank_info']; 
+        if ($rank_type == 'teams') {
+            $player_show = "none";
+        } else {
+            $player_show = '';
+        }
+
+    ?>
+        <section class="out_stage player_div v1"  style = "display:<?=$player_show?>">
+            <?php $star_status = 'in';?>
+            <?php include TPLPATH . '/pl/star.phtml';?>
+	</section>
+    
+    <?php if (count($rank_info['out']) > 0): ?>
+	<section class="out_stage player_div v1"   style = "display:<?=$player_show?>">
+		<div class="card card11 ctype-1">
+            <div class="card-list">
+                <?php $card42_title = $energy_info['leave_star_label']?>
+                <?php include TPLPATH . '/pl/card42.phtml';?>
+		        <?php $star_status = 'out';?>
+                <?php include TPLPATH . '/pl/star.phtml';?>
+		    </div>
+		</div>
+    </section>
+    <?php endif;?>
+    
+    <?php if(!empty($energy_info['official_label']) && !empty($energy_info['official_uids'])):?>
+	<section class="follow">
+		<div class="card card11 ctype-1">
+		    <div class="card-list">
+                <?php $card42_title = $energy_info['official_label']?>
+                <?php include TPLPATH . '/pl/card42.phtml';?>
+                <?php $users = $energy_info['official_uids'];?>
+                <?php include TPLPATH . '/pl/card30.phtml';?>
+                
+		    </div>
+		</div>
+    </section>
+    <?php endif;?>
+    <?php if(!empty($energy_info['special_guest_label']) && !empty($energy_info['special_guest_uids'])):?>
+	<section class="follow">
+        <div class="card card11 ctype-1">
+            <div class="card-list">
+                <?php $card42_title = $energy_info['special_guest_label']?>
+                <?php include TPLPATH . '/pl/card42.phtml';?>
+                <?php $users = $energy_info['special_guest_uids'];?>
+                <?php include TPLPATH . '/pl/card30.phtml';?>
+             </div>
+        </div>
+    </section>
+    <?php endif;?>
+    <?php include  TPLPATH . '/pl/layer.phtml'?>
+</body>
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>js/jquery.js?version=<?=$g_version_js;?>"></script>
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>static/echarts.js?version=<?=$g_version_js;?>"></script>
+<script type="text/javascript"  data-valid="weibo_wb">
+$CONFIG = {
+	server_time : "<?=time()?>",
+    eid : "<?=$eid?>",
+    uid : "<?=$uid?>",
+    page_id : "<?=$page_id?>",
+    follow_uids : '<?=json_encode($follow_uids)?>',
+    aj : '<?=json_encode($aj)?>',
+	uicode : "<?=$g_uicode?>",
+	suda_info : '<?=json_encode($suda_info)?>',
+    energy_info : <?=json_encode($energy_info)?>,
+    home_url : "<?=$energy_info['home_url']?>",
+    top1_info : <?=json_encode($top1_info)?>,
+    rank_type : "<?=$rank_type?>",
+	page_type : "<?=$page_type?>",
+	is_special_oppo: '<?=$is_special_oppo?>'
+   }; 
+</script>
+
+
+<script type="text/javascript"  data-valid="weibo_wb">
+	var SUDA = SUDA || [];
+	SUDA.push(["setGatherInfo", null, 'WEIBO-V5', "fuid:<?=$uid?>;eid:<?=$eid?>"]);
+</script>
+<script data-main="1" type="text/javascript" charset="utf-8" src=" http://tjs.sjs.sinajs.cn/open/analytics/js/suda.js?version=<?php echo $g_version_js;?>"></script>
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>js/energy/swiper.js?version=<?=$g_version_js;?>"></script> 
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>js/energy/init.js?version=<?=$g_version_js;?>"></script> 
+
+</html>

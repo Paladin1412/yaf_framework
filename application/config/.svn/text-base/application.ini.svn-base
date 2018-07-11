@@ -1,0 +1,10 @@
+[yaf]
+application.directory=APPPATH
+application.dispatcher.throwException=true
+application.dispatcher.catchException=true
+application.dispatcher.defaultRoute.type="map"
+application.dispatcher.defaultRoute.controllerPrefer=true
+application.modules = "Index"
+[product:yaf]
+[test:product]
+[dev:product]

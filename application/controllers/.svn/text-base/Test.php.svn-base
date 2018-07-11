@@ -1,0 +1,13 @@
+<?php
+/**
+ * @author zhouxiang1
+ */
+class TestController extends AbstractController {
+    public $authorize = self::MUST_LOGIN;
+    public $init_viewer = true;
+    
+    public function indexAction() {
+        var_dump(Sso_Sdk_Client::instance()->get_version());exit;
+        echo test;exit;
+    }
+}

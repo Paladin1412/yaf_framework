@@ -1,0 +1,46 @@
+#!/bin/sh
+
+#推送访谈日志
+export RSYNC_PASSWORD='s8f7d5v9d0@%d,~.0'
+
+#no dir exit
+if [ ! -d /data1/www/applogs/v6.talk.weibo.com/statistic/ ]
+then
+	exit;
+fi
+
+cd /data1/www/applogs/v6.talk.weibo.com/statistic/
+
+local_ip=`/sbin/ifconfig eth0 | awk '/inet addr/ {print $2}' | awk -F: '{print $2}'`
+
+last_year=`date -d yesterday +%Y%m`
+last_date=`date -d yesterday +%Y%m%d`
+last_day=`date -d yesterday +%d`
+
+#no file exit
+if [ ! -f ${last_date}.log ]
+then
+	exit
+fi
+
+if [ ! -d ${last_year}/${last_day} ];
+then
+    mkdir -p ${last_year}/${last_day}
+    chown nobody.nobody ${last_year}/${last_day} -R
+fi
+
+cp ${last_date}.log ${last_year}/${last_day}/${last_date}_${local_ip}.log
+
+#temp cleartext rsync
+rsync -avgRt --progress ${last_year}/${last_day}/${last_date}_${local_ip}.log senddatauser@r2.data.sina.com.cn::weibo_vtalk_bhv
+
+rm -rf ${last_year}/${last_day}/${last_date}_${local_ip}.log
+
+#make tag
+log_path="/data1/www/applogs/v6.talk.weibo.com/statistic";
+
+tag_name="PSO_check_weibo_vtalk_bhv";
+
+sh /data1/www/htdocs/v6.talk.weibo.com/daemon/cron/make_tag.sh $log_path $tag_name $last_date
+
+

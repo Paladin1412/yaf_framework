@@ -1,0 +1,26 @@
+<?php
+
+class ErrorController extends Yaf_Controller_Abstract {
+	public function errorAction($exception) {
+		Tool_Log_Commlog::write_log('UNCAUGHT_EXCEPTION', 'code:'.$exception->getCode().'|msg:'.$exception->getMessage().'|file:'.$exception->getFile().'|line:'.$exception->getLine().'|trace:'.json_encode($exception->getTrace()));
+		if($exception instanceof Exception_Unlogin){
+			Tool_Redirect::unlogin();
+		} elseif ($exception instanceof Exception_Interface) {
+			$msg = $exception->getMessage();
+			Tool_Jsout::normal(Tool_WeiboConf::get('interfacecode.common.sys_error'), $msg);
+		} else if($this->getRequest()->isXmlHttpRequest()) {
+			Tool_Jsout::normal(Tool_WeiboConf::get('riacode.error'), _("系统繁忙"));
+			exit();
+		} else if (strncasecmp('/sorry', $this->getRequest()->getRequestUri(), 6)) {
+			if($exception instanceof Yaf_Exception_LoadFailed) {
+				Tool_Redirect::page_not_found();
+			}else {
+				Tool_Redirect::sys_busy();
+			}
+		}
+	}
+}
+
+
+
+

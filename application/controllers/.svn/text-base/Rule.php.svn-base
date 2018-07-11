@@ -1,0 +1,16 @@
+<?php
+/**
+ * 微博任务-规则详情二级页
+ * @author shixi_qingyu5
+ */
+class RuleController extends AbstractController {
+    public $authorize = self::MAYBE_LOGIN;
+    public $init_viewer = true;
+
+    public function indexAction() {
+        $energy_id = $this->getRequest()->getParam('energy_id');
+        Comm_Context::set('energy_id',$energy_id);
+        $page = new Page_Rule();
+        $this->render_page($page);
+    }
+}

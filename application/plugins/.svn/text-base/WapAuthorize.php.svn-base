@@ -1,0 +1,166 @@
+<?php
+/**
+ * wap权限验证、对用户非授权访问进行处理
+ * 
+ * @package Plugin InewroutePlugin
+ * @copyright copyright(2011) weibo.com all rights reserved
+ */
+class WapAuthorizePlugin extends Yaf_Plugin_Abstract {
+
+    private $_viewer_require = false;
+
+    private $_viewer_info = null;
+
+    private $_viewer_uid = null;
+
+    private $_authorize_type = null;
+    
+    // 页面跳转类型
+    // 系统忙
+    const REDIRECT_SYS_BUSY = 1;
+    // 被封杀
+    const REDIRECT_USER_BLOCK = 2;
+    // 被冻结
+    const REDIRECT_FREEZE = 3;
+    // 找不到页面
+    const REDIRECT_PAGE_NOT_FOUND = 4;
+    // 需要开通舳博才能访问
+    const REDIRECT_NEED_OPEN_MBLOG = 5;
+    // 登录状态
+    const MUST_LOGIN = 0;
+    // 未登录状态
+    const NOT_LOGIN = 1;
+    // 无状态
+    const MAYBE_LOGIN = 2;
+
+    public function routerShutdown(Yaf_Request_Abstract $request, Yaf_Response_Abstract $response) {
+        $controller = $request->getControllerName();
+        $module = $request->getModuleName();
+        if ($module != 'Index') {
+            $controller_path = str_replace("_", "/", $controller);
+            $controller_file = APPPATH . "/modules/{$module}/controllers/{$controller_path}.php";
+            Yaf_loader::import($controller_file);
+        }
+        $properties = get_class_vars($controller . "Controller");
+        $authorize_type = $properties["authorize"];
+        // 访问不需要登录或者可登录可不登录的页面时，如果用户未登录，不强制用户跳转至登录页面
+        if ($authorize_type === self::NOT_LOGIN || $authorize_type === self::MAYBE_LOGIN) {
+            $this->_viewer_require = FALSE;
+        } else {
+            // 访问必需登录的页面时，如果用户未登录，需要强制用户跳转于登录页
+            $this->_viewer_require = TRUE;
+        }
+
+		$this->_initViewer();
+		$this->_initOwner();
+
+        // 使用CDN缓存页面
+        if (Tool_WeiboConf::get('env.use_cdn') == 1) {
+            $module = $request->getModuleName();
+            $cache_time = Tool_WeiboConf::get('cdn.cache_time.' . $module . '.' . $controller);
+            AbstractController::send_http_response_headers_for_cdn($cache_time);
+        }
+    }
+
+    /**
+     * 初始化当前登录用户对象
+     */
+    public function _initViewer() {
+        $sso = new Comm_Ssocn();
+        $this->_viewer_uid = $sso->user();
+        
+        if (empty($this->_viewer_uid) && $this->_viewer_require == TRUE) {
+            $login_param = array('r' => 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], 'entry' => 'mweibo');
+            $url = 'https://passport.weibo.cn/signin/login?' . http_build_query($login_param);
+            header("Location:" . $url);
+            exit();
+        }
+        
+        // 非法用户需要跳转自相应的页面处理
+        if (!empty($this->_viewer_uid)) {
+            try {
+                $this->_viewer_info = Dr_User::get_user_info($this->_viewer_uid);
+            } catch (Exception $e) {
+                Tool_Log_Commlog::write_log('2016_GETUINFOERR', "err_msg:{$e->getMessage()}");
+                // 用户异常也会抛出异常，在这里只处理超时相关的异常
+                if (0 == $e->getCode() || strstr($e->getMessage(), 'timed out')) {
+                    $this->_redirect(self::REDIRECT_SYS_BUSY);
+                }
+            }
+            if ($this->_viewer_info != null) {
+                Comm_Context::set('viewer', $this->_viewer_info);
+            }
+
+            //$this->_dealIllegalUser();
+        }
+        
+    }
+
+    /**
+     * 用户特殊类型处理，需要处理的类型如下 1. 未开通微博的用户 2. 冻结用户 3. 拉黑用户 4. 系统忙
+     */
+    // 冻结用户
+    const USER_TYPE_FREEZE = 8;
+    // 封杀用户
+    CONST USER_TYPE_BLOCK = 7;
+
+    private function _dealIllegalUser() {
+        try {
+            $user_type_info = Dr_User::get_user_type($this->_viewer_uid);
+            // 用户type不存在，示为被封杀
+            $type = isset($user_type_info['type']) ? $user_type_info['type'] : self::USER_TYPE_BLOCK;
+            if ($type == self::USER_TYPE_FREEZE) {
+                // 被冻结
+                $this->_redirect(self::REDIRECT_FREEZE);
+            } else if ($type == self::USER_TYPE_BLOCK) {
+                // 被封杀
+                $this->_redirect(self::REDIRECT_USER_BLOCK);
+            } else {
+                // 正常用户
+            }
+        } catch (Comm_Exception_Program $e) {
+            Tool_Log_Commlog::write_log('DEALUSERERR', "err_msg:{$e->getMessage()}");
+            // 未开通微博的用户，跳转至微博用户注册页
+            if ($e->getCode() == '10013' || $e->getCode() == '20003') {
+                $this->_redirect(self::REDIRECT_NEED_OPEN_MBLOG);
+            } else {
+                $this->_redirect(self::REDIRECT_SYS_BUSY);
+            }
+        }
+    }
+
+    /**
+     * 页面跳转(根据跳转类型，跳转至相应的页)
+     * 
+     * @param int $type
+     */
+    private function _redirect($type) {
+        $url = "";
+        switch ($type) {
+            // 冻结页面
+            case self::REDIRECT_FREEZE :
+            // 封杀页面
+            case self::REDIRECT_USER_BLOCK :
+                $url = "http://weibo.cn?from=userblock";
+                break;
+            // 开通微博页面
+            case self::REDIRECT_NEED_OPEN_MBLOG :
+                $url = "http://weibo.cn/guide";
+                break;
+            // 系统忙页面
+            case self::REDIRECT_SYS_BUSY :
+                $url = "http://weibo.cn?from=sysbusy";
+                break;
+            default :
+                break;
+        }
+        if ($url == "") {
+            return;
+        }
+        header('Location: ' . $url);
+    }
+
+    private function _initOwner() {
+        Comm_Context::set('owner', $this->_viewer_info);
+    }
+}

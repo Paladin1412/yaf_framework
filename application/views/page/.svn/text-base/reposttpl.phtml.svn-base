@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+	<title>转发微博</title>
+	<link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$base_url['css']?>css/tv_challenge/common.css?version=<?=$g_version_css?>">
+	<link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$base_url['css']?>css/tv_challenge/sent_msg.css?version=<?=$g_version_css?>">
+	<link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$base_url['css']?>css/tv_challenge/en_base.css?version=<?=$g_version_css?>">
+</head>
+<body>
+<div class="container" id="box">
+	<div class="mod">
+		<div class="mod-list" data-node="modList">
+			<div class="header" node-type="header" style="position: fixed; top: 0px;">
+				<div class="left"><a href="javascript:void(0);" class="almost_btn" node-type="cancel">取消</a></div>
+				<div class="center">
+					<div class="page_title"></div>
+					<div class="user_name"></div>
+				</div>
+				<div class="right"><a href="javascript:void(0);" node-type="publish" class="almost_btn">发送</a></div>
+			</div>
+		</div>
+	</div>
+	<div class="mod">
+		<div class="mod-list" data-node="modList">
+			<div class="message publisher" node-type="message" id="_1472794155676_4">
+				<div class="msg_content">
+					<!--
+        <textarea name="msg-content" id="msg-content" class="msg_content_txt" node-type="content" placeholder="说说分享心得…" data-sname="<?=$sname?>"> <?=$text?></textarea>
+-->
+					<iframe name="msg-content" id="msg-content" class="msg_content_txt" node-type="content" placeholder="说说分享心得…" data-sname="<?=$sname?>" data-text="<?=$text?>">
+						<a> dddd</a></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="mod" id="_1472794155676_5">
+		<div class="mod-list" data-node="modList">
+			<div class="txt_alert" node-type="word" max="140">79</div>
+		</div>
+	</div>
+	<div class="mod" id="_1472794155676_7">
+		<div class="mod-list" data-node="modList">
+			<div class="retweet_card" id="_1472794155676_8">
+				<div class="tweet_pic"><img src="<?=$card_pic?>" alt=""></div>
+				<div class="tweet_content">
+					<div class="user_name">@<?=$card_name?></div>
+					<div class="tweet_txt"><?=$card_text?></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php if (!empty($follow)): ?>
+		<div class="bottombar">
+			<div class="m-box">
+				<aside class="m-box-center-a">
+					<label class="m-checkbox">
+						<input type="checkbox" node-type="follow_btn" checked="" data="<?=$follow['id']?>">
+						<span><i class="m-font m-font-check"></i></span>
+						<em node-type="weibo_profile">同时关注@<?=$follow['name']?></em>
+					</label>
+				</aside>
+			</div>
+		</div>
+	<?php endif; ?>
+</div>
+<div class="extLives"></div>
+<div id="cli_dialog_div"></div>
+<div class="m-popup" node-type="tip_div" style="display:none">
+	<div class="m-box m-box-dir m-box-center">
+		<header>
+			<i class="m-font m-font-line-check"></i>
+		</header>
+		<h3 node-type="tip">发送成功</h3>
+	</div>
+</div>
+
+
+</body>
+<script type="text/javascript" data-valid="weibo_wb">
+    $CONFIG = {
+        mid: "<?=$mid?>",
+        uid: "<?=$cuid?>",
+        uicode: "<?=$g_uicode?>",
+        suda_info: '<?=json_encode($suda_info)?>',
+        referer: "<?=$referer?>",
+        target_url: "<?=$target_url?>",
+        aj_repost: "<?=$aj_repost?>",
+        page_type: "<?=$page_type?>",
+    };
+</script>
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>js/jquery.js?version=<?=$g_version_js;?>"></script>
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>js/energy/reposttpl.js?version=<?=$g_version_js;?>"></script>
+</html>

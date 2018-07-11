@@ -1,0 +1,49 @@
+[ka]
+offical_uid = '3506728370';
+
+[stats]
+uicode = '40000082'
+sudakey = 'weboi_task_net'
+sudavalue_like = 'h5_support'
+sudavalue_banner = 'banner_position'
+
+[reduction] ;1=正常 0=降级
+
+[container]
+previous_missions_all = '231052_%s_tvmission_previous_missions_all'
+previous_missions_myjoin = '231052_%s_tvmission_previous_missions_myjoin'
+[nav]
+previous_missions_all_scheme ='sinaweibo://cardlist?containerid=231052_%s_tvmission_previous_missions_all'
+home_url = "http://mission.tv.weibo.cn/m/%s"
+;页面相关的配置
+
+[suffix];首页banner支持的后缀
+img = 'png,jpg,gif' 
+video = 'mp4,swf'
+
+
+[links]
+;页面跳转链接
+rule_prize = '/m/%s/rule#prize'
+rule_brief = '/m/%s/rule#brief'
+caller_scheme = 'sinaweibo://cardlist?containerid=231052_%s_tvmission_callers'
+caller_href = 'http://m.weibo.cn/p/231052_%s_tvmission_callers'
+
+more_scheme = 'sinaweibo://cardlist?containerid=231052_%s_tvmission_flow_%s_all' 
+more_href = 'http://m.weibo.cn/p/231052_%s_tvmission_flow_%s_all' 
+history_scheme = 'sinaweibo://cardlist?containerid=231052_%s_tvmission_previous_missions_all'
+history_href = 'http://m.weibo.cn/p/231052_%s_tvmission_previous_missions_all'
+;card 发布器中icon
+;icon = 'http://h5.sinaimg.cn/upload/2015/09/25/3/timeline_card_small_run_default.png'
+icon = 'http://n.sinaimg.cn/photo/7c07ed40/20160412/canyu.png'
+;feed timeline中icon
+icon_default = 'http://n.sinaimg.cn/photo/7c07ed40/20160506/timeline_canyu_default.png'
+
+[pics]
+mission_feed_nojoin_my = 'http://n.sinaimg.cn/photo/7c07ed40/20160408/mission_me.jpg'
+mission_feed_nojoin_friend = 'http://n.sinaimg.cn/photo/7c07ed40/20160408/mission_friend.jpg'
+icon_join = 'http://n.sinaimg.cn/photo/7c07ed40/20160412/canyu.png'
+
+[link_title]
+length = 10
+

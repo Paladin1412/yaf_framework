@@ -1,0 +1,51 @@
+[channel_name]
+hn="湖南卫视"
+js="江苏卫视"
+df="东方卫视"
+zj="浙江卫视"
+
+[domain]
+static="2016.tv.weibo.cn"
+dynamic="2016d.tv.weibo.cn"
+
+[link]
+video_more.scheme = "sinaweibo://cardlist?containerid=2305780002_3658";//视频区查看更多
+video_more.h5 ='http://m.weibo.cn/p/2305780004_3658';
+happy_newyear = "http://%s/happynewyear";//回调地址
+all_star = "http://%s/allstar" ;//卫视二级页
+
+[rule]
+star_list = '魅族手机带你嗨翻#2016跨年#！湖南、浙江、江苏、东方四家卫视走起，卫视跨年和爱豆谁登榜首，你说了算！卫视排名即各家爱豆打榜得分总和！明星齐聚，等你来翻牌助攻！'
+landmarks = '魅族手机教你怎么玩：四家卫视热度决定地标亮度。想让谁家亮起来，就点击左侧地标，助攻热度走起！各家分会场已整装，更多酷炫玩法与预告，点击看爆点。'
+videos = "最燃最新跨年视频给你好看。发布跨年相关视频，你的视频也可以登上这里。"
+
+[customrank]
+rank_id = '23'; 自定义榜单
+
+[hotfeed]
+appid = 'pageapp:23055763d3d983819d66869c27ae8da86cb176'
+page_id = '1008083805919abf4df58025f97a170f98d561'
+
+[uicode]
+index = '40000074';   首页
+zj = '400000741' ;浙江卫视页
+df = '400000742' ;东方卫视页
+hn = '400000743' ;湖南卫视页
+js = '400000744' ;江苏卫视页
+
+[reduction]
+all_static = 0 ;纯静态
+morefeed = 0 ;懒加载feed
+feedlike = 0 ;feed赞上行
+feedlike_state = 0 ;feed赞下行
+support = 0 ; 打榜
+
+[domain_control]; AJ请求是否指向动态域名。0=不使用；1=使用
+morefeed = 1 
+attitude_check = 1 ;feed流赞状态检查
+
+[morestar]
+page_size = 20;懒加载明星 每页数据
+
+[support]
+max_times_per_voter_per_day = 50; 每用户每天最多可支持的票数

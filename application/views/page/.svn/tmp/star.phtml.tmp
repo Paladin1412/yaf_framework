@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="telephone=no" name="format-detection" />
+    <title>数据详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" type="text/css" charset="utf-8" href="<?=$base_url['css']?>css/tv_challenge/energy.css?version=<?=$g_version_css?>">
+    <script type="text/javascript" src="http://img.t.sinajs.cn/t4/appstyle/operators_special/script/red_2016_H5/ios.js?version=<?=$g_version_js?>"></script>
+</head>
+<?php $spt_star = array(
+    'name' => $star['screen_name'], 
+    'star_uid' => $star['uid'],
+    'img' => $star['avatar_large'],
+    'verified_class' => $star['verified_class']
+);
+?>
+<body  class="energy team energy_lv">
+    <?php include  TPLPATH . '/pl/star_info_top.phtml'?>
+	<section class="follow out_stage energy_secd" id = "fans_list_all">
+		<div class="card card11 ctype-1">
+		    <div class="card-list">
+                <div class="card m-panel card42">
+                
+                    <div class="card-wrap">
+                        <div class="card-main">
+                            <div class="m-box">
+                                <div class="box-left m-box-col m-box-center-a">
+                                    <span class="link-text"><span class="main-link">粉丝排行</span></span>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+		        <div class="card m-panel">
+		            <div class="card-wrap tit ">
+	                    <div class="m-box">
+                            <div class="box-left m-box-center-a">
+                                <div class="fans_list">
+									<div class="m-box-col m-box-center">
+										<div class="m-img-box">
+                                        <img src="<?=$cuser['user_info']['avatar_large']?>">
+										</div>
+									</div>
+								</div>
+                            </div>
+                            <div class="m-box-col m-box-dir m-box-center">
+							    <div class="m-text-box">
+                                 <?php 
+                                    if ($cuser['energy'] != 0) {
+										$text = $energy_info['fans_devote_brief'];
+                                    } else {
+                                        $text = $energy_info['fans_notspt_text'];
+                                    }
+                                ?>
+                                    <h4 class="m-text-cut"><?=$text?></h4>
+							    </div>
+						</div>
+                        </div>
+	              	</div>
+		        </div>
+                <?php $users = $fans_rank;?>
+                <?php include TPLPATH . '/pl/card30.phtml';?>
+		    </div>
+		</div>
+	</section>
+	<section>
+		<div class="m-bottom-bar m-bar-panel">
+        <div class="bar-btn  fans_numb_energy" action-data='<?=json_encode($spt_star)?>' >
+            <a href="javascript:;" class="m-btn m-btn-block m-btn-orange" action-type="spt_btn"  ontouchstart=""><?=$energy_info['fans_spt_btn_label']?></a>
+			</div>
+		</div>
+	</section>
+    <?php include  TPLPATH . '/pl/layer.phtml'?>
+</body>
+<script type="text/javascript"  data-valid="weibo_wb">
+$CONFIG = {
+    server_time : "<?=time()?>",
+    eid : "<?=$eid?>",
+    uid : "<?=$uid?>",
+    suid : "<?=$star['uid']?>",
+    page_id : "<?=$page_id?>",
+	uicode : "<?=$g_uicode?>",
+    follow_uids : '<?=json_encode($follow_uids)?>',
+    energy_info: <?=json_encode($energy_info)?>,
+    aj : '<?=json_encode($aj)?>',
+	suda_info : '<?=json_encode($suda_info)?>',
+    home_url : "<?=$energy_info['home_url']?>",
+    suid : "<?=$star['uid']?>",
+	page_type : "<?=$page_type?>",
+	is_special_oppo: '<?=$is_special_oppo?>'
+}; 
+</script>
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>js/jquery.js?version=<?=$g_version_js;?>"></script>
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>static/echarts.js?version=<?=$g_version_js;?>"></script>
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>js/energy/init.js?version=<?=$g_version_js;?>"></script>
+
+
+<script type="text/javascript"  data-valid="weibo_wb">
+	var SUDA = SUDA || [];
+	SUDA.push(["setGatherInfo", null, 'WEIBO-V5', "fuid:<?=$uid?>;eid:<?=$eid?>"]);
+</script>
+<script data-main="1" type="text/javascript" charset="utf-8" src=" http://tjs.sjs.sinajs.cn/open/analytics/js/suda.js?version=<?php echo $g_version_js;?>"></script>
+
+</html>

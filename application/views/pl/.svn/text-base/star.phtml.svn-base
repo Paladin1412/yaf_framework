@@ -1,0 +1,185 @@
+<?php if (count($rank_info[$star_status]) == 0) return ;
+    end($rank_info[$star_status]);
+    $last_key = key($rank_info[$star_status]);
+    reset($rank_info[$star_status]);
+
+
+?>
+<?php foreach($rank_info[$star_status] as $key => $star): ?>
+        <?php $rank_count = count($rank_info[$star_status]);?>
+<?php if ($star_status == 'in' && in_array($key, array(0, 1, 2, 3))):?>
+<div class="card card11 ctype-1 out-box">
+ <div class="card-list">
+<?php endif;?>
+<div class="card m-panel card25 " action-type="star_card" action-data="<?=$star['star_uid']?>" >
+    <div class="card-wrap">
+        <div class="card-main"> 
+            <div class="m-box">
+                <div class="box-left m-box-center-a">
+                     <?php if (in_array($key, array(0, 1, 2))): ?>
+                        <div class="icon_t"><?=$key+1?></div>
+                    <?php else:?>
+                    <div class="box-left m-box-center-a"><i><?=$key+1?></i></div>
+                    <?php endif;?>
+                </div>
+                <div class="m-img-box" action-type="weibo_url" action-data="/e/<?=$eid?>/s/<?=$star['star_uid']?>" is-profile-suda="true">
+                    <img src="<?=$star['user_info']['avatar_large']?>">
+                    <i class="<?=$star['user_info']['verified_class']?>"></i>
+                </div>
+                <div class="m-box-col m-box-dir m-box-center">
+                    <div class="m-text-box">
+                         <?php
+                              if ($star['use_name_prefix'] == 1) {
+                                 $screen_name = $energy_info['name'] . $star['user_info']['screen_name'];
+                              } else {
+                                  $screen_name = $star['user_info']['screen_name'];
+                              }
+                    
+                             $arrow = ($key == 0 && $star_status == 'in') ? 'up' : 'down';
+                             if ($star['energy'] > 99999) {
+                                   $energy = sprintf('%.1f', (float)($star['energy']/10000)) . '万';
+                             } else {
+                                $energy = $star['energy'];
+                             }
+                        ?>
+                        <h3 class="m-text-cut"><?=$screen_name?></h3>
+                        <h4 class="m-text-cut"><?=$energy_info['energy_label'] . ':' . $energy?></h4>
+                 </div>
+             </div>
+            <?php if ($star_status == 'in'):?>
+                <div class="box-right m-box-center-a " action-type="detail_btn">
+                     <p>数据详情<i class="m-font m-font-arrow-<?=$arrow?>" ></i></p>
+                </div>
+            <?php elseif ( $star_status == 'out' && $energy_info['end_still_count'] == 0): ?>
+                <div class="box-right m-box-center-a ">
+                    <p><?=date('m',$star['end_time'])?>月<?=date('d', $star['end_time'])?>日<?=$energy_info['leave_time_label'] ? $energy_info['leave_time_label'] : '离场'?></p>
+                 </div>
+            <?php elseif ($star_status == 'out' && $energy_info['end_still_count'] == 1):?>
+                <div class="box-right m-box-center-a m-block" action-type="detail_btn"> 
+                     <p><?=date('m',$star['end_time'])?>月<?=date('d', $star['end_time'])?>日<?=$energy_info['leave_time_label'] ? $energy_info['leave_time_label'] : '离场'?></p>
+                    <p>数据详情<i class="m-font m-font-arrow-<?=$arrow?>"  ></i></p>
+                </div>
+            <?php endif;?>
+        </div>
+    </div>
+
+<?php 
+    if (in_array($key, array(0, 1, 2)) && $star_status == 'in') {
+        $fans_list = '';
+        $fans_show = 'action-show-fans= fans_show';
+    } else {
+        $fans_list = 'none';
+        $fans_show = '';
+    }
+     
+   if ($key == 0 && $star_status == 'in') {
+       $fans_numb = '';
+       $trigger_show = 'action-show=true';
+   } else {
+       $fans_numb = 'none';
+       $trigger_show = '';
+   }
+?>
+
+     
+    <?php if ($star_status == 'in' || $energy_info['end_still_count'] == 1):?>
+    <div class="fans_area">
+        <?php 
+            $action_data = json_encode(array('star_uid' => $star['star_uid'], 'name' => $star['user_info']['screen_name'], 'img' => $star['user_info']['avatar_large'], 'verified_class' => $star['user_info']['verified_class'] ));
+        ?>
+            <div class="fans_numb  fans_numb_energy" style="display:<?=$fans_numb?>" action-data='<?=$action_data?>'>
+            <div class="card-wrap">
+                <div class="card-main"> 
+                    <div class="m-box">
+                        <div class="m-box-col m-box-dir m-box-center" >
+                            <div class="m-text-box">
+                            <h3 class="m-text-cut">节目提及 排名 <i><?=$star['mention_rank']?></i>/<?=$rank_count?></h3>
+                            <h4 class="m-text-cut"><i style="width:<?=(int)($star['mention']/$rank_info['max_energy'][$star_status]['mention']*100)?>%"></i></h4>
+                            </div>
+                        </div>
+                        <div class="box-right m-box-center-a m-numb">
+                        <span><?=$star['mention']?></span>
+                        </div>
+                        <div class="box-right m-box-center-a ">
+						<a action-type="sendwb_btn"  href="javascript:;" class="m-btn m-btn-orange" ontouchstart=""><?=($isoppo? '拍照' : '发微博')?></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-wrap">
+                <div class="card-main"> 
+                    <div class="m-box">
+                        <div class="m-box-col m-box-dir m-box-center" >
+                            <div class="m-text-box">
+                            <h3 class="m-text-cut">节目互动 排名 <i><?=$star['rt_rank']?></i>/<?=$rank_count?></h3>
+                            <h4 class="m-text-cut"><i style="width:<?=(int)($star['rt']/$rank_info['max_energy'][$star_status]['rt']*100)?>%"></i></h4>
+                            </div>
+                        </div>
+                        <div class="box-right m-box-center-a m-numb">
+                        <span><?=$star['rt']?></span>
+                        </div>
+                        <div class="box-right m-box-center-a ">
+                            <a href="javascript:;" action-type="rt_btn" class="m-btn m-btn-orange" ontouchstart="">去转发</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-wrap">
+                <div class="card-main"> 
+                    <div class="m-box">
+                        <div class="m-box-col m-box-dir m-box-center" >
+                            <div class="m-text-box">
+                            <h3 class="m-text-cut"><?=$energy_info['spt_label']?> 排名 <i><?=$star['spt_rank']?></i>/<?=$rank_count?></h3>
+                                <h4 class="m-text-cut"><i style="width:<?=(int)($star['spt']/$rank_info['max_energy'][$star_status]['spt']*100)?>%"></i></h4>
+                            </div>
+                        </div>
+                        <div class="box-right m-box-center-a m-numb">
+                        <?php $display_spt = $star['spt'];?>
+                        <span><?=$display_spt?></span>
+                        </div>
+                        <div class="box-right m-box-center-a ">
+                        <a href="javascript:;" action-type="spt_btn"  class="m-btn m-btn-orange" ontouchstart=""><?=$energy_info['spt_btn_label']?></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-wrap">
+                <div class="m-tab">
+                    <div class="m-box">
+                        <span class="m-box-col tit">趋势</span>
+                        <span class="m-box-col " action-type="tab_check" action-data="type=trend_hours&count=24" <?=$trigger_show?>  ><i class="check m-cur">24小时</i></span>
+                        <span class="m-box-col " action-type="tab_check" action-data="type=trend_days&count=7"><i class="check ">7日</i></span>
+                        <span class="m-box-col " action-type="tab_check" action-data="type=trend_days&count=30"><i class="check ">30天</i></span>
+                        <span class="m-box-col " action-type="tab_check" action-data="type=trend_days&count=<?=$day_count?>"><i class="check ">累计</i></span>
+                    </div>
+                </div>
+            <div node-type="canvas"   class="chart"  style="width:100%;height:200px"> </div>
+            </div>
+        </div>
+        </div>
+        <?php 
+            $fans_rank = Dr_Energy_Fan::get_fans_rank_info($eid, $star['star_uid'], 1, 6)['rank'];
+        ?>
+        <?php if ($fans_rank && count($fans_rank > 0)):?>
+            <div class="fans_list" <?=$fans_show?> style="display:<?=$fans_list?>" action-type="weibo_url" action-data="/e/<?=$eid?>/s/<?=$star['star_uid']?>#fans_list_all">
+                    <?php foreach($fans_rank as $fan):?>
+                     <div class="m-img-box" >
+                        <img src="<?=$fan['user_info']['avatar_large']?>">
+                        <i class="<?=$fan['user_info']['verified_class']?>"></i>
+                    </div>
+                   <?php endforeach;?>
+                <div class="box-right">
+                    <i class="m-font m-font-dot-more" ></i>
+                </div>
+          </div>
+    <?php endif;?>
+<?php endif;?>
+</div> 
+</div>
+<?php if ( $star_status == 'in' && in_array($key, array(0, 1, 2, $last_key))):?>
+		    </div>
+        </div>
+<?php endif;?>
+<?php endforeach;?>
+
+

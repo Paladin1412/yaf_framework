@@ -1,0 +1,59 @@
+[base_url]
+js = 'http://h5.sinaimg.cn/apps/talk/';
+css = 'http://img.t.sinajs.cn/t4/appstyle/zt/';
+huati_card_url = 'http://ww1.sinaimg.cn/mw690/9f8af443jw1f6vf6y3xflj2050050mx0.jpg';
+support_use_up_default_pic = 'http://img.t.sinajs.cn/t4/appstyle/zt/images/tv_challenge/icon_empty.png'
+
+[biz] 
+biz_id = '231114' ;能量榜业务号
+page_id = '231114_%s_tvenergy' ; 业务号_能量榜id_tvenergy
+item_id = '231114_%u_tvenergy_%s';  业务号_能量榜id_tvenergy_话题id  话题异步cardid
+home_url = 'http://energy.tv.weibo.cn/e/%s/index'
+rule_url = 'http://energy.tv.weibo.cn/e/%s/rule'
+huati_scheme = 'sinaweibo://infopage?containerid=231114_%s_tvenergy&toolbar_hidden=1'
+
+
+[aj] 
+trends = '/aj/trend'
+relation = '/aj/relation'
+fan = '/aj/morefans'
+incrspt = '/aj/incrspt'
+checkspt = '/aj/checkspt'
+repost = '/aj/repost'
+checkchance = '/aj/checkchance'
+checkrepost = '/aj/checkrepost'
+
+;统计相关
+[stats]
+mobilecard_click_uicode = 10000011
+sendweibo_uicode = 40000095
+
+;suda的key
+suda.index.key = 'weibo_taiwang_power'
+;首页-banner图点击
+suda.index.values.banner = 'banner_position'
+;首页-选手头像点击   %u:star_uid
+suda.index.values.player = 'player_%u'
+;首页-战队榜点击
+suda.index.values.team = 'team'
+;首页-个人榜点击
+suda.index.values.person = 'person'
+;首页-战队榜关注
+suda.index.values.team_focus = 'team_focus'
+;首页-个人榜关注
+suda.index.values.person_focus = 'person_focus'
+;首页-战队榜加油  %u:star_uid
+suda.index.values.team_support = 'team_support_%u'
+;首页-个人榜加油  %u:star_uid
+suda.index.values.person_support = 'person_support_%u'
+
+;suda的key
+suda.star.key = 'weibo_taiwang_power'
+;个人页-关注点
+suda.star.values.fans_focus = 'fans_focus'
+;个人页-加油   ;%u:star_uid
+suda.star.values.support = 'fans_support_%u'
+
+;降级开关
+[down_grade]
+check_relation = 0 ; 降级为1, 不再检查关注关系

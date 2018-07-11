@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title><?=$data['energy_name']?></title>
+<!--frame-->
+<link id="" href="http://img.t.sinajs.cn/t4/appstyle/zt/css/tv_challenge/module/base/frame.css?version=<?=$g_version_css?>" type="text/css" rel="stylesheet" />
+
+<!--skin-->
+<link id="uuskin_host" href="http://img.t.sinajs.cn/t6/skin/expand_topic/skin.css?version=<?=$g_version_css?>" type="text/css" rel="stylesheet" />
+</head>
+
+<body class="B_page">
+<?php if ($data['intro'] && $data['pic'] && $data['brief'] && $data['top5']):?>
+<div class="WB_cardwrap S_bg2 TV_personal" node-type="meta-data" action-data="<?=$data['eid']?>_<?=$data['uid']?>">
+                        <div class="MF_title S_line2"> <span action-type="jump_home"  action-data="url=<?=$data['home_url']?>"  class="p_title"><?php echo $data['intro'];?></span></div>
+                        <div class="MF_content"><img src="<?php echo $data['pic'];?>" action-type="jump_home" action-data="url=<?=$data['home_url']?>" class="banner"><p class="intro" action-type="jump_home" action-data="url=<?=$data['home_url']?>" ><?php echo $data['brief']; ?></p>
+                            <ul>
+                                <?php foreach($data['top5'] as $key => $user):?>
+                                <li class="user">
+                                    <div class="card card30 m-avatar-box">      
+                                       <div class="card-wrap">
+                                            <div class="card-main">
+                                                <div class="m-box">
+                                                    <div class="box-left m-box-center-a"><i class="top <?php echo $user['class_top'];?>"><?php echo $user['text_top'];?></i></div>
+                                                    <div class="m-img-box">
+                                                    <img src="<?php echo $user['user_pic']?>">
+                                                    </div>
+                                                    <div class="m-box-col m-box-dir m-box-center">
+                                                        <div class="m-text-box">
+                                                        <h3 class="m-text-cut"><?php echo $user['screen_name']?><?=$user['icon_verified']?></h3>
+                                                        <h4 class="m-text-cut"><?php echo $user['energy_format']?></h4>
+                                                        <div class="all"><i style="width:<?=$user['width']?>%;"></i></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="box-right m-box-center-a m-box-center m-btn-box">
+                                                    <a href="javascript:;" class="m-btn m-btn-orange"  action-type="widget_publish" action-data="id=<?=substr($data['topic_id'], 5)?>&domain=100808&content=<?=rawurlencode($user['text'] . ' ' . $data['home_url'])?>&spr=<?=$user['spr']?>"  ontouchstart=""><?php echo $data['topiccard_spt_label']?></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>  
+                            <?php endforeach;?>
+                            </ul>
+                            <div class="card card6">
+                                <div class="card-wrap">
+                                    <div class="card-main">
+                                    <a href="javascript:void(0);" action-type="jump_home" action-data="url=<?=$data['home_url']?>"   class="color-gray">查看完整榜单 <i class="m-font m-font-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+<?php endif;?>
+</body>
+</html>

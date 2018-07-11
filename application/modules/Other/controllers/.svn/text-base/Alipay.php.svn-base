@@ -1,0 +1,11 @@
+<?php
+
+class AlipayController extends AbstractController {
+    public $authorize = self::MAYBE_LOGIN;
+    public $init_viewer = false;
+    
+    public function indexAction() {
+        $page = new Page_SpringMobile_Index();
+        $this->render_page($page);
+    }
+}

@@ -1,0 +1,44 @@
+<?php
+//xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
+//function xhprof_shutdown(){
+//	require_once('xhprof_lib/utils/xhprof_lib.php');
+//	require_once('xhprof_lib/utils/xhprof_runs.php');
+//	$xhprof_data = xhprof_disable();
+//	$xhprof_runs = new XHProfRuns_Default();
+//	$run_id = $xhprof_runs->save_run($xhprof_data, "xhprof_foo");
+//}
+//register_shutdown_function('xhprof_shutdown');
+//
+error_reporting(E_ALL & ~ E_STRICT & ~ E_NOTICE);
+ini_set('display_errors',0);
+/* @MARK: 这部分应该交给WebServer去做 */
+header("Content-type: text/html; charset=utf-8");
+header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+header("Pragma: no-cache");
+
+define('ROOTPATH', dirname(dirname(__FILE__)));
+define('APPPATH', ROOTPATH . '/application');
+define('TPLPATH', APPPATH  . '/views');
+define('DMNPATH', ROOTPATH . '/daemon');
+define('COOKIE_CONF_PATH', ROOTPATH. '/libraries/SinaSSO/cookie.conf');
+define('VISITOR_CONF_PATH', '/data1/www/privdata/v6.weibo.com/SinaSSO/visitor.conf.ini');    
+define('LOCALE_PATH', '/data1/www/privdata/v6.weibo.com/languages/');
+define('SYSLIB_PATH', ROOTPATH . '/libraries');
+//对于uri中含有双斜杠的一律替换并重定向(防止用户进入v5页面)
+$pos = strpos($_SERVER['REQUEST_URI'],'?');
+if($pos){
+	$uri = substr($_SERVER['REQUEST_URI'],0,$pos);
+}else{
+	$uri = $_SERVER['REQUEST_URI'];
+}
+//这段正则太ulgy了,需要优化
+$uri_fix = preg_replace("/\/{2,}/", "/", $uri);
+$uri_fix = preg_replace("/\/$/", "", $uri_fix);
+$uri_fix = empty($uri_fix)?'/':$uri_fix;
+if($uri_fix != $uri){
+	header("Location: $uri_fix");
+	exit;
+}
+$app = new Yaf_Application(APPPATH . '/config/application.ini');
+$app->bootstrap()->run();

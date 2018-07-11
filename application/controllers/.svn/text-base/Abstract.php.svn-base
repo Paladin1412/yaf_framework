@@ -1,0 +1,177 @@
+<?php
+/**
+ * 微博前端控制器基类
+ * 
+ * @package
+ *
+ * @copyright copyright(2011) weibo.com all rights reserved
+ * @author hqlong <qinglong@staff.sina.com.cn>
+ * @version 2011-4-6
+ */
+abstract class AbstractController extends Yaf_Controller_Abstract {
+    // 登录状态
+    const MUST_LOGIN = 0;
+    
+    // 未登录状态
+    const NOT_LOGIN = 1;
+    // 无状态
+    const MAYBE_LOGIN = 2;
+
+    const V36_PREFIX = "V36_";
+    
+    // 控制器权限，默认权限为必须登录才可访问
+    public $authorize = self::MUST_LOGIN;
+
+    public $init_owner = FALSE;
+
+    public $init_skin = FALSE;
+
+    public $init_viewer = TRUE;
+    
+    // 验证soo的session
+    const MUST_CHECK_SESSON = TRUE;
+    // 默认不验证
+    public $check_sesson = FALSE;
+
+    // 判断是否是PC登录
+    public $is_pc = 0;
+
+    //是否判断登录和ua,返回跳转URL (tvenergy aj用)
+    public $check_login = FALSE;
+
+    //是否验证referer
+    public $check_referer = FALSE;
+
+    public function init() {
+        // rpc调用不处理
+        if (strpos($_SERVER['HTTP_USER_AGENT'], "Yar")) {
+            return;
+        }
+
+        // 验证referer,防止csrf漏洞
+        if ($this->check_referer){
+            $this->check_referer();
+        }
+
+
+        if ($this->check_login){
+            $this->check_login();
+        }
+
+        //$this->check_ispc();
+    }
+
+    public function render_single_pagelet_plainly(Comm_Bigpipe_Pagelet $pl, $return_string = false) {
+        $meta = $pl->get_meta_data();
+        $data = $pl->prepare_data();
+        
+        $tpl = new Yaf_View_Simple(TPLPATH);
+        $tpl->assign($meta);
+        $tpl->assign($data);
+        $html = $tpl->render($pl->get_template());
+        
+        if ($return_string) {
+            return $html;
+        } else {
+            echo $html;
+        }
+    }
+
+    public function render_page(Comm_Bigpipe_Pagelet $page_obj) {
+        $render = Comm_Bigpipe_Render::create(Comm_Bigpipe_Render::detect_render_type(), $page_obj);
+        $render->render();
+    }
+
+    public function render_ajax($code, $msg = '', $data = NULL) {
+		if(Comm_Context::param('callback')) {//2016跨年和春晚项目用
+			Tool_Jsonp::out($code, $msg, $data);
+		}else{
+			Tool_Jsout::normal($code, $msg, $data);
+		}
+    }
+
+    public function exit_render_ajax($code, $msg = '', $data = NULL) {
+        if(Comm_Context::param('callback')) {//2016跨年和春晚项目用
+            Tool_Jsonp::out($code, $msg, $data);
+        }else{
+            Tool_Jsout::normal($code, $msg, $data);
+        }
+        exit();
+    }
+
+    public function get_page_prefix() {
+        if (Tool_Version::get_version_mark() == Tool_Version::VERSION_V36) {
+            return self::V36_PREFIX;
+        }
+        return '';
+    }
+
+    public function render_frame($pf) {
+        $outputer = Comm_Bp_Outputer::getInstance();
+        $pl_render = new Comm_Bp_PageletRender();
+        $render_mode = isset($_GET['norpc']) && $_GET['norpc'] ? Comm_Bp_PageframeRender::MODE_SERIAL : Comm_Bp_PageframeRender::MODE_PARALLEL;
+        $pf_render = new Comm_Bp_PageframeRender($outputer, $pl_render, $render_mode);
+        // $pf = new $pf_name();
+        $pf_render->render($pf);
+    }
+
+    public static function send_http_response_headers_for_cdn($cache_time) {
+        if (!headers_sent() && $cache_time > 0) {
+            header("Expires: " . gmdate('D, d M Y H:i:s T', time() + $cache_time));
+            header_remove('Pragma');
+            header("Cache-Control: max-age={$cache_time}");
+            header("Use-Cdn: yes");
+        } 
+    }
+
+    public function check_login(){
+        $sso = new Comm_Ssocn();
+        $uid = $sso->user();
+
+        if (empty($uid)) {
+            //判断ua
+            $login_param = array('r' => $_SERVER['HTTP_REFERER'], 'entry' => 'mweibo');
+            $url = 'https://passport.weibo.cn/signin/login?' . http_build_query($login_param);
+            $this->render_ajax(Tool_Conf::get('riacode.error'), '', array('redirect' => $url));
+            exit();
+        }
+
+        try {
+            $viewer_info = Dr_User::get_user_info($uid);
+        } catch (Exception $e) {
+            Tool_Log_Commlog::write_log('TVENERGY_GETUINFOERR', "err_msg:{$e->getMessage()}");
+        }
+
+        if ($viewer_info != null && !Comm_Context::get('viewer', false)) {
+            Comm_Context::set('viewer', $viewer_info);
+        }
+    }
+
+    //根据ua判断是pc还是移动端
+    public function check_ispc() {
+        if (Comm_Wap_User_Info_Device::isFromClient()) {
+            $this->is_pc = 0;
+        } else {
+            $this->is_pc = 1;
+        }
+    }
+
+    //检查referer
+    public function check_referer() {
+        $request = Yaf_Dispatcher::getInstance()->getRequest();
+        $controller_name = $request->getControllerName();
+        if (!isset($_SERVER['HTTP_REFERER'])) {
+            Tool_Log_Commlog::write_log($controller_name, 'no referer');
+            $this->render_ajax(Comm_Util::conf("riacode.sass_error"), 'not allow');
+            exit();
+        }
+        $parse_url = @parse_url($_SERVER['HTTP_REFERER']);
+        $domain = Comm_Context::get_domain();
+        if (($parse_url['host'] != $domain) && (!in_array($parse_url['host'], Comm_Util::conf("riacode.ajax_allow_host")))) {
+            Tool_Log_Commlog::write_log($controller_name, 'not allowed referer|HTTP_REFERER:' . $_SERVER['HTTP_REFERER']);
+            $this->render_ajax(Comm_Util::conf("riacode.sass_error"), 'not allow');
+            exit();
+        }
+    }
+
+}

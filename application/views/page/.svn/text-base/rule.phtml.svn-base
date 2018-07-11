@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title><?=$title?> - 规则详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" type="text/css" charset="utf-8" href="http://img.t.sinajs.cn/t4/appstyle/zt/css/tv_challenge/index.css?version=<?=$g_version_css?>">
+
+</head>
+<body class="challenge rule_h5 ">
+<?=$rule;?>
+</body>
+
+<script type="text/javascript"  data-valid="weibo_wb">
+    var SUDA = SUDA || [];
+    SUDA.push(["setGatherInfo", null, 'WEIBO-V5', "fuid:<?=$uid?>;eid:<?=$eid?>"]);
+</script>
+<script data-main="1" type="text/javascript" charset="utf-8" src=" http://tjs.sjs.sinajs.cn/open/analytics/js/suda.js?version=<?php echo $g_version_js;?>"></script>
+
+
+</html>

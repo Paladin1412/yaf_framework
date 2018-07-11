@@ -1,0 +1,16 @@
+#!/bin/sh
+export RSYNC_PASSWORD='miNing_1Q23wE'
+
+#no dir exit
+log_dir=/data1/www/privdata/2016.tv.weibo.com/springfeeds/
+echo ${log_dir}
+if [ ! -d ${log_dir} ]
+then
+    mkdir -p ${log_dir}
+    chown 777 ${log_dir} -R
+fi
+
+cd ${log_dir}
+
+#temp cleartext rsync
+rsync -avgRt --progress --delete datas_mining@10.75.8.23::data_hot_mblog_chunwan ${log_dir}

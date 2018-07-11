@@ -1,0 +1,47 @@
+<?php foreach($users as $user):?> 
+<div class="card m-panel card30 m-avatar-box">		
+<div class="card-wrap">
+	<div class="card-main">
+		<div class="m-box">
+			<div class="m-img-box weibo_profile" data-href="http://m.weibo.cn/u/<?=$user['user_info']['id']?>" data-scheme="sinaweibo://userinfo?<?=http_build_query(['uid'=>$user['user_info']['id']])?>">
+            <img src="<?=$user['user_info']['avatar_large']?>">
+            <i class="<?=$user['user_info']['verified_class']?>"></i> 
+			</div>
+			<div class="m-box-col m-box-dir m-box-center weibo_profile" data-href="http://m.weibo.cn/u/<?=$user['user_info']['id']?>" data-scheme="sinaweibo://userinfo?<?=http_build_query(['uid'=>$user['user_info']['id']])?>">
+				<div class="m-text-box">
+                <h3 class="m-text-cut"><?=$user['user_info']['screen_name']?></h3>
+                <h4 class="m-text-cut"><?=$user['user_info']['description']?></h4>
+                <?php 
+                if ($user['energy']) {
+                    if ($user['energy'] > 99999) {
+                            $energy = sprintf('%.1f', (float)($user['energy']/10000)) . '万';
+                     } else {
+                          $energy = $user['energy'];
+                    }
+
+                     $follow_energy = '贡献' . $energy_info['energy_label'] . ' ' . $energy;
+                } else {
+                    $followers_count = $user['user_info']['followers_count'];
+                    if ($followers_count > 99999) {
+                        $followers_count = (int) ($followers_count/10000) .'万';
+                    }
+                    $follow_energy = '粉丝数: ' . $followers_count;
+                }
+?>
+                <h5 class="m-text-cut"><?=$follow_energy?></h5>
+				</div>
+			</div>
+			<?php if($cuser['user_info']['id'] != $user['user_info']['id']):?>
+				<div class="box-right m-box-center-a m-box-center m-btn-box">
+					<span class="m-add-box"  action-data-suid="<?=$user['user_info']['id']?>" action-type="follow_btn">
+						<i class="m-font m-font-follow"></i>
+						<h4>加关注</h4>
+					</span>
+				</div>
+			<?php endif;?>
+		</div>
+	</div>
+</div>
+</div>
+<?php endforeach;?>
+

@@ -1,0 +1,16 @@
+<?php
+/**
+ * 通用 自渲染转发页面
+ * @author qingyu8@staff.weibo.com
+ * @date 2017/6/15
+ */
+class ReposttplController extends AbstractController {
+	public $authorize = self::MUST_LOGIN;
+	public $init_viewer = true;
+
+	public function indexAction() {
+		Comm_Context::set('is_pc', $this->is_pc);
+		$page = new Page_Reposttpl();
+		$this->render_page($page);
+	}
+}

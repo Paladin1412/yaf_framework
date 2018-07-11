@@ -1,0 +1,94 @@
+<?php
+$teams[0]['dir'] = 'left';
+$teams[1]['dir'] = 'right';
+$pk_energy_all = $teams[0]['energy_all'] + $teams[1]['energy_all'];
+if (!empty($pk_energy_all)) {
+    $teams[0]['percent'] = $teams[0]['energy_all'] / $pk_energy_all * 100;
+    $teams[1]['percent'] = $teams[1]['energy_all'] / $pk_energy_all * 100;
+} else {
+    $teams[0]['percent'] = $teams[1]['percent'] = 50;
+}
+?>
+
+<section class="pk m-panel card" node-type="pk_box">
+        <div class="pk_top card card17 m-col-2">
+            <div class="card-wrap">
+                <div class="card-main">
+                    <?php foreach($teams as $team):?>
+                    <div class="m-item-box">
+                    <span><i><img src="<?=$team['info']['pk_pic']['in_energy']?>"></i></span>
+                    </div>
+                    <?php endforeach;?>
+                </div>
+                <div class="pk_bar">
+                    <?php foreach($teams as $team):?>
+                    <span class="<?=$team['dir']?>" style="width: <?=$team['percent']?>%;">
+                        <?php if ($team['dir'] == 'left'):?>
+                        <cite><img src="<?=$base_url['css']?>images/tv_challenge/pk.png?version=<?=$g_version_css?>"></cite>
+                        <?php endif;?>
+                        <b><?=Tool_Formatter_Number::number_decimal_one($team['energy_all'])?></b>
+                        <font><?=$team['info']['name']?></font>
+                    </span>
+                    <?php endforeach;?>
+                </div>
+            </div>
+        </div>
+        <div class="pk_cont card card17 m-col-2">
+            <div class="card-wrap">
+                <div class="card-main">
+                    <?php foreach($teams as $team):?>
+                        <?php $p_count = 1; if (!empty($team['out']['rank'])) { $players_team = array_merge($team['in']['rank'] , $team['out']['rank']); } else {$players_team = $team['in']['rank'];} ?>
+                        <div class="m-item-box <?=$team['dir']?>" node-type="<?=$team['dir']?>_div">
+                    <h3><?=$team['info']['name']?></h3>
+                        <?php foreach ($players_team as $player):?>
+                            <?php if ($player['status'] == 'in' || ($player['status'] == 'out' && $energy_info['end_still_count'] == 1)) { $heart_show = ''; } else { $heart_show = 'hidden';}?>
+                        <a href="javascript:;">
+                            <div class="card-wrap">
+                                <div class="card-main">
+                                    <div class="m-box">
+                                    <?php if ($team['dir'] == 'left'):?>
+                                            <div class="box-right m-box-center-a"  action-type="team_card_rig" action-data="<?=$player['user_info']['star_uid']?>" style="visibility:<?=$heart_show?>">
+                                            <i class="m-font m-font-arrow-right" ></i>
+                                        </div>
+                                        <div class="m-box-col m-box-dir m-box-center" action-type="weibo_url" action-data="/e/<?=$eid?>/s/<?=$player['user_info']['star_uid']?>"  >
+                                            <div class="m-text-box" action-type="format_overflow">
+                                                <h3 class="m-text-cut"><?=$player['user_info']['user_info']['screen_name']?></h3>
+                                                <h4 class="m-text-cut-2"><?=Tool_Formatter_Number::number_decimal_one($player['energy']) . $energy_info['energy_label']?></h4>
+                                            </div>
+                                        </div>
+                                        <div class="m-img-box" action-type="weibo_url" action-data="/e/<?=$eid?>/s/<?=$player['user_info']['star_uid']?>">
+                                            <img src="<?=$player['user_info']['user_info']['avatar_large']?>">
+                                            <i class="<?=$player['user_info']['user_info']['verified_class']?>"></i>
+                                                 <?php if ($player['status'] == 'out'):?>
+                                             <i class="state_off_line"><?php echo $energy_info['team_leave_star_label'];?></i>
+                                                 <?php endif;?>
+                                        </div>
+                                    <?php else:?>
+                                        <div class="m-img-box" action-type="weibo_url" action-data="/e/<?=$eid?>/s/<?=$player['user_info']['star_uid']?>">
+                                            <img src="<?=$player['user_info']['user_info']['avatar_large']?>">
+                                            <i class="<?=$player['user_info']['user_info']['verified_class']?>"></i>
+                                                 <?php if ($player['status'] == 'out'):?>
+                                            <i class="state_off_line"><?php echo $energy_info['team_leave_star_label'];?></i>
+                                                 <?php endif;?>
+                                        </div>
+                                        <div class="m-box-col m-box-dir m-box-center" action-type="weibo_url" action-data="/e/<?=$eid?>/s/<?=$player['user_info']['star_uid']?>" >
+                                            <div class="m-text-box">
+                                                <h3 class="m-text-cut"><?=$player['user_info']['user_info']['screen_name']?></h3>
+                                                <h4 class="m-text-cut-2"><?=Tool_Formatter_Number::number_decimal_one($player['energy']) . $energy_info['energy_label']?></h4>
+                                            </div>
+                                        </div>
+                                        <div class="box-right m-box-center-a" action-type="team_card_rig" action-data="<?=$player['user_info']['star_uid']?>" style="visibility:<?=$heart_show?>">
+                                            <i class="m-font m-font-arrow-right"  ></i>
+                                        </div>
+                                    <?php endif;?>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        <?php endforeach;?>
+                    </div>
+                    <?php endforeach;?> 
+                </div>
+            </div>
+        </div>
+    </section>

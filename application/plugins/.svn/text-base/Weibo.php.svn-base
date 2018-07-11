@@ -1,0 +1,565 @@
+<?php
+
+class WeiboPlugin extends Yaf_Plugin_Abstract {
+
+	//登录状态
+	const MUST_LOGIN = 0;
+	//未登录状态
+	const NOT_LOGIN = 1;
+	//无状态
+	const MAYBE_LOGIN = 2;
+	//验证soo的session
+	const MUST_CHECK_SESSON = TRUE;
+
+    const FLG_LEVEL_1 = 1;
+    const FLG_LEVEL_2 = 2;
+    const DATA_NONE = '';  //空文件数据
+
+    const DATA_FILE_LEVEL_1 = 'admin/security/crawlerip/allblackip.txt';
+    const DATA_FILE_LEVEL_2 = 'admin/security/crawlerip/blackip.txt';
+
+    //不需要检测referer的Controller
+    public $need_not_check_referer = array(
+        "Pls_Commonapi",
+        "Pls_Rpc",
+    );
+	public $viewer_info = NULL;
+
+	public function routerStartup(Yaf_Request_Abstract $request, Yaf_Response_Abstract $response) /* {{{ */{
+	} /* }}} */
+
+	public function routerShutdown(Yaf_Request_Abstract $request, Yaf_Response_Abstract $response) /* {{{ */ {
+	    if ($request->isCli()){
+	        return;
+	    }
+
+		$viewer_require = FALSE;
+        $controller = $request->getControllerName();
+        if ($controller == 'Pc') {
+            $request->setControllerName('Pc_Index');
+        }
+        $properties = get_class_vars($controller . "Controller");
+    	$script_uri  = Comm_Context::get_server('SCRIPT_URL');  //此处不能使用 $request->getRequestURI();
+
+		if("/ajaxlogin.php" == $script_uri || '/logout.php' == $script_uri){
+		     return;
+        }
+        
+        /* @MARK:: 用控制器的常量应该会更漂亮 */
+        if (!isset($properties["authorize"]) ||
+            ($properties["authorize"] === self::NOT_LOGIN || $properties["authorize"] === self::MAYBE_LOGIN)) {
+            $viewer_require = FALSE;
+        } else {
+            $viewer_require = TRUE;
+        }
+
+		/* 关键操作要验证用户的session */
+		$must_check_session = FALSE;
+        if($this->check_session($controller)){
+        	$must_check_session = TRUE;
+        }
+        
+        /* 预登陆用户，判断是否有访问权限 */
+        $support_prelogin = false;
+        if ($this->check_prelogin_access($controller)) {
+            $support_prelogin = true;
+        }
+
+        /* 访客登陆用户，判断是否有访问权限 */
+        $support_visitor = false;
+        if ($this->check_visitor_access($controller)) {
+            $support_visitor = true;
+        }
+        
+        if(isset($properties["init_viewer"]) && $properties["init_viewer"]){
+            $this->init_viewer($viewer_require, $must_check_session, $support_visitor, $support_prelogin ,$controller);
+        }
+
+		if (isset($properties["init_owner"]) && $properties["init_owner"] === TRUE) {
+			if($viewer_require  == FALSE && !Tool_Misc::is_login()) {
+				/* 未登录标识 */
+				Comm_Context::set('UNLOGIN_ACCESS', TRUE);
+			}
+			$this->init_owner();
+		}
+		
+		// 使用CDN缓存页面
+		if(Tool_WeiboConf::get('env.use_cdn') == 1){
+		    $module = $request->getModuleName();
+            $cache_time = Tool_WeiboConf::get('cdn.cache_time.' . $module . '.' . $controller);
+		    AbstractController::send_http_response_headers_for_cdn($cache_time);
+		}
+	}
+
+	public function dispatchLoopStartup(Yaf_Request_Abstract $request, Yaf_Response_Abstract $response) /* {{{ */{
+	    //cli
+	    if ($request->isCli()) {
+	        return;
+	    }
+
+	    $this->checkReferer($request);
+        $this->blackip($request);
+	} /* }}} */
+
+	protected function checkReferer($request) /* {{{ */ {
+		if(in_array($request->controller, $this->need_not_check_referer)) {
+			return ;
+		}
+		if(!$request->isPost()){
+			return ;
+		}
+		$this->set_referer_config();
+		$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+		if(!Comm_Security::check_url_is_trusted(urldecode($referer))){
+			throw new Exception('suspected csrf attack.');
+		}
+		if(!Comm_Security::check_insecure_string_in_url_params($referer)){
+			throw new Exception('suspected hijacked referer page.');
+		}
+	} /* }}} */
+
+	protected function set_referer_config() /* {{{ */ {
+	    $this->set_default_regular();
+	} /* }}} */
+
+	protected function set_default_regular() /* {{{ */ {
+		Comm_Security::add_trusted_domain ( 'weibo.com', false );
+		Comm_Security::add_trusted_domain ( 'pub.admin.weibo.com', false );
+		Comm_Security::add_trusted_domain ( 's.weibo.com', false );
+		Comm_Security::add_trusted_domain ( 'new.weibo.com', false );
+		Comm_Security::add_trusted_domain ( 'beta1.new.weibo.com', false );
+		Comm_Security::add_trusted_domain ( 'v5.weibo.com', false );
+		Comm_Security::add_trusted_domain ( 'v6.weibo.com', false );
+		Comm_Security::add_trusted_domain ( 'www.weibo.com', false );
+		Comm_Security::add_trusted_domain ( 'pls.weibo.com', false );
+        Comm_Security::add_trusted_domain ( '2016.tv.weibo.cn', false );
+		Comm_Security::add_trusted_domain ( '2016zx.tv.weibo.cn', false );
+		Comm_Security::add_trusted_domain ( '2016miley.tv.weibo.cn', false );
+		Comm_Security::add_trusted_domain ( 'miley.pubadmin.com', false );//运营后台
+		if (Comm_Weibo_Util::weibo_env_check ()) {
+			Comm_Security::add_trusted_domain ( 'weibo.com', true );
+		}
+		Comm_Security::add_trusted_domain ( 't.sina.com.cn', false );
+		//for flash
+		Comm_Security::add_trusted_domain ( 'js.wcdn.cn', false );
+		Comm_Security::add_trusted_domain ( 'js.t.sinajs.cn', false );
+		$insecure_patterns = array(
+                /*document xss中常用到的js对象 */'(document.)+',
+                        /*Element dom调用的关键字*/ '(.)?([a-zA-Z]+)?(Element)+(.*)?(\()+(.)*(\))+',
+                        /*script 脚本标签关键字*/ '(<script)+[\s]?(.)*(>)+',
+                        /*src 外调源地址属性*/ 'src[\s]?(=)+(.)*(>)+',
+                        /*on**(事件) 一些标签事件,比如onload等*/ '[\s]+on[a-zA-Z]+[\s]?(=)+(.)*',
+                        /*XMLHttp ajax提交请求关键字*/ 'new[\s]+XMLHttp[a-zA-Z]+',
+                        /*import 外部css调用*/ '\@import[\s]+(\")?(\')?(http\:\/\/)?(url)?(\()?(javascript:)?' );
+		Comm_Security::set_insecure_patterns ( $insecure_patterns );
+	} /* }}} */
+
+
+	protected function is_show_en() /* {{{ */ {
+        $show_en = false;
+        $http_weibo_region = Comm_Context::get_server('HTTP_WEIBO_REGION');
+        $ip = Comm_Context::get_client_ip();
+        if ( Tool_Ip::allow_internal_ip($ip) || $http_weibo_region == 'ABROAD' ){
+            $show_en = true;
+        }
+        return $show_en;
+	} /* }}} */
+
+
+	protected function init_viewer($viewer_require = false, $must_check_session = false, $support_visitor = false, $support_prelogin = false, $controller='') /* {{{ */ {
+		try {
+			$sso_info = Comm_Sso::user();
+			Comm_Context::set('sso_info', $sso_info);
+		} catch (Comm_Weibo_Exception_SinaSSO $e) {
+            if ($viewer_require) {
+                if ($e->getCode() == '30022') {
+                    // SESSION过期，抛出100001错误码
+                    Tool_Redirect::ssoSessionTimeout();
+                } else {
+                    Tool_Redirect::unlogin();
+                }
+            } else {
+                return;
+            }
+		}
+		
+		$viewer_uid = $sso_info['uid']; //登录者uid
+
+		$exp_flg = false;
+		try {
+			$this->viewer_info = Dr_User::get_user_info($viewer_uid);
+			$this->viewer_info->login_state = $is_login;
+		} catch (Comm_Exception_Program $e) {
+			$exp_flg = true;
+		}
+		if(!is_null($this->viewer_info)) {
+			Comm_Context::set('viewer', $this->viewer_info);
+		}
+		$this->init_litefunc();
+	} 
+
+	//初始化用户可使用的某些beta版功能
+	private function init_litefunc(){
+	    $viewer = Comm_Context::get('viewer', false);
+	    if(!$viewer) return;
+	    //好友圈上线灰度，  复用密友圈白名单
+	    if(Tool_Misc::friends_circle_white_list($viewer->id)) {
+	        Comm_Context::set('is_miyou', true);
+	    }else{
+	        Comm_Context::set('is_miyou', false);
+	    }
+	}
+
+	protected function deal_viewer_info_exp($viewer_uid, $e) /* {{{ */ {
+		$deal_out_flg  = false;  //跳出处理异常标识
+		//用户存在
+		$error_code = $e->getCode();
+		try {
+			$viewer_type = Dr_User::get_user_type($viewer_uid);
+			$state = isset($viewer_type['level']) ? $viewer_type['level'] : Do_User::STATE_BLOCK;
+			$deal_out_flg = $this->deal_login_user_type($viewer_uid, $state, $error_code);
+		} catch (Comm_Exception_Program $e) {
+            if (!empty($viewer_uid )){
+                if($this->viewer_require) {
+                    Tool_Redirect::full_info();
+                } else {
+                    $param_url = Comm_Context::param('url');
+                    $curl = Comm_Context::get_server('SCRIPT_URL');
+                    if(($curl == '/login.php' && empty($param_url)) || $curl == '/'.$viewer_uid || $curl == '/' || $curl == '/home' || $curl == '/profile'){
+                        Tool_Redirect::full_info();
+                    }else{
+                        return;
+                    }
+                }
+            }elseif($e->getCode() == '10013' || $e->getCode() == '20003') {
+				//检测用户信息不完整
+				Tool_Redirect::full_info();
+			} else {
+				$this->deal_sys_busy($e);
+				$deal_out_flg = $this->deal_login_user_type($viewer_uid, Do_User::STATE_BLOCK, $error_code);
+			}
+		}
+		//处理系统繁忙异常
+		$this->deal_sys_busy($e);
+		if($deal_out_flg === false){
+			//未处理用户信息异常
+			$deal_flg = $this->deal_login_user_type($viewer_uid, Do_User::STATE_BLOCK, $error_code);
+		}
+		return true;
+	} /* }}} */
+
+	protected function deal_sys_busy($e) /* {{{ */ {
+		if (0 == $e->getCode() || strstr($e->getMessage(), 'timed out')) {
+			Tool_Redirect::sys_busy();
+		}
+		return true;
+	} /* }}} */
+
+	protected function deal_login_user_type($viewer_uid, $state=0, $error_code = 0) /* {{{ */ {
+		$deal_out_flg = false;  //跳出处理异常标识
+		switch ($state) {
+		case Do_User::STATE_FREEZE:
+			$script_url = Comm_Context::get_server("SCRIPT_URL");
+			if ($script_url != "/unfreeze" && $script_url != "/aj/mobile/unfreeze" && $script_url != "/aj/user/checkstatus"){
+				Tool_Redirect::page_unfreeze();
+			}
+			$deal_out_flg = true;
+			//冻结页需要返回的用户信息
+			$info = array('id' => $viewer_uid, 'name' => $viewer_uid, 'screen_name' => $viewer_uid, 'lang'=> 'zh-cn','gender'=>'m');
+			$this->viewer_info = new Do_User($info, Comm_DataObject::MODE_OUTPUT);
+			Comm_Context::set('viewer_uid', $viewer_uid);
+			break;
+		case Do_User::STATE_BLOCK:  //同default
+		default:
+			//防止系统出错而出现的死循环跳转
+			if ('/sorry' != $_SERVER['SCRIPT_URL']) {
+				Tool_Redirect::user_block(false, $error_code);
+			}
+			$deal_out_flg = true;
+			break;
+		}
+		return $deal_out_flg;
+	} /* }}} */
+
+	protected function init_owner() /* {{{ */ {
+		$owner_uid = Comm_Context::param('uid', 0);
+		$owner_domain = Comm_Context::param('domain');
+		$owner_nick = Comm_Context::param('nick');
+		$viewer = Comm_Context::get('viewer', FALSE);
+		$weihao = Dr_Weihao::get_url_weihao();
+
+		//传递的uid或domain为登录用户的时，owner即为viewer
+		if ($viewer && !$weihao) {
+			if ($viewer->id == $owner_uid || $viewer->domain == $owner_domain) {
+				Comm_Context::set('owner', $viewer);
+				return;
+			}
+		}
+		//以domain取owner
+		if ($owner_domain !== NULL) {
+			try {
+				$owner = Dr_User::get_user_info_by_domain($owner_domain);
+				$this->deal_user_type($owner);
+				Comm_Context::set('owner', $owner);
+				return;
+			} catch (Comm_Exception_Program $e) {
+				$this->deal_user_exp($e);
+			}
+		}
+		//以微号取owner
+		if ($weihao){
+			try {
+				$owner = Dr_User::get_user_info_by_domain($weihao);
+				if ($owner['weihao'] == $weihao){
+					$this->deal_user_type($owner);
+					Comm_Context::set('owner', $owner);
+					return;
+				}
+			}catch (Comm_Exception_Program $e) {
+				$this->deal_user_exp($e);
+			}
+		}
+		//以uid取owner
+		if (0 !== $owner_uid) {
+			try {
+
+				$owner_info = Dr_User::get_user_info($owner_uid);
+				$this->deal_user_type($owner_info);
+				Comm_Context::set('owner', $owner_info);
+				return;
+			} catch (Comm_Exception_Program $e) {
+				try {
+					$owner = Dr_User::get_user_info_by_domain($owner_uid);
+					$this->deal_user_type($owner);
+					Comm_Context::set('owner', $owner);
+					return;
+				}catch (Comm_Exception_Program $e) {
+					$this->deal_user_exp($e);
+				}
+			}
+		}
+
+		//以昵称取owner
+		if(NULL != $owner_nick){
+			try {
+				$owner = Dr_User::get_user_info_by_screen_name($owner_nick);
+				Comm_Context::set('owner', $owner);
+				return;
+			} catch (Comm_Exception_Program $e) {
+				$search_url = Tool_WeiboConf::get('domain.search').'/user/'.urlencode($owner_nick).'&Refer=at';
+				header('Location:'.$search_url);
+				exit;
+			}
+		}
+
+		//未传递uid和domain时，owner等于viewer
+		Comm_Context::set('owner', $viewer);
+	} /* }}} */
+
+	protected function deal_user_exp(Exception $e) /* {{{ */{
+		if(in_array($e->getCode(), array('10025', '20003', '20401'))) {
+			Tool_Redirect::user_block(true, $e->getCode());
+		}
+		Tool_Redirect::user_not_exists($e->getCode());
+		return TRUE;
+	} /* }}} */
+
+	protected function deal_user_type(Do_User $user, $is_self = false) /* {{{ */ {
+		switch ($user['type']) {
+		case Do_User::STATE_BLOCK:
+			if($is_self) {
+				Tool_Redirect::user_block();
+			} else {
+				Tool_Redirect::user_block(true);
+			}
+			break;
+		case Do_User::STATE_FREEZE:
+			if($is_self) {
+				Tool_Redirect::user_block();
+			} else {
+				Tool_Redirect::user_block(true);
+			}
+			break;
+		default:
+			break;
+		}
+		return TRUE;
+	} /* }}} */
+
+    public function blackip($request) /* {{{ */ {
+        $script_url = Comm_Context::get_server("SCRIPT_URL");
+        if ($script_url != '/unfreeze' && $script_url != '/sorry') {
+            $is_black_ip_1 = self::is_black_ip(self::FLG_LEVEL_1);
+            if($is_black_ip_1) {
+                if($request->controller === 'Pls_Commonapi'){
+                    $content = "real_client_ip=>".$_SERVER['REMOTE_ADDR'].";called_pl=>".$_GET['key'];
+                    Tool_Log_Commlog::write_log('TrackWhitePage/Blackip', $content);
+                }
+                Tool_Redirect::response(Tool_WeiboConf::get('domain.weibo') . '/sorry', '100002');
+            }
+        }
+        return true;
+    } /* }}} */
+
+     /* {{{ 处理二级IP黑名单访问
+     */
+    public static function deal_access_auth_level_2() {
+        if(!self::check_access_auth_level_2()) {
+            $refer = urlencode(Comm_Context::get_server('REQUEST_URI'));
+            Tool_Redirect::response('/guide/accessdeny?refer=' . $refer);
+        }
+        return true;
+    } /* }}} */
+
+     /* {{{ 检查二级IP黑名单访问权限
+     */
+    public static function check_access_auth_level_2() {
+        $access_auth = true;
+        $viewer = Comm_Context::get('viewer', false);
+        if($viewer) {
+            try {
+                $is_black_ip_2 = self::is_black_ip(self::FLG_LEVEL_2);
+                if($is_black_ip_2) {
+                    $secode = Comm_Context::form('secode', false);
+                    if($secode) {
+                        $check_code = true;
+                        $tool_pincode = new Tool_Pincode();
+                        $check_code = $tool_pincode->verify_pincode($secode, 'rule');
+                        //检查高级验证码
+                        if($check_code === false) {
+                            $access_auth = false;
+                        }
+                    } else {
+                        //过滤掉V用户，达人用户，绑定手机用户
+                        if(!in_array($viewer['level'], array(2, 7))) {
+                            //检查手机绑定
+                            $bind_mobile = Dr_Account::is_mobile_bind($viewer['id']);
+                            !$bind_mobile && $access_auth = false;
+                        }
+
+                    }
+                }
+            } catch (Exception $e) {
+                Tool_Log_Commlog::write_log('EXCEPTION', 'check black ip level 2 error:'. $e->getMessage());
+            }
+        }
+        return $access_auth;
+    } /* }}} */
+
+    public static function is_black_ip($level) /* {{{ */ {
+        $is_black_ip = false;
+        $user_ip = Comm_Context::get_client_ip();
+        if($level == self::FLG_LEVEL_1) {
+        	$ip_data = self::get_ip_data_level_1();
+        } elseif($level == self::FLG_LEVEL_2) {
+        	$ip_data = self::get_ip_data_level_2();
+        }
+        if($ip_data != self::DATA_NONE && self::is_ip_included($ip_data, $user_ip)) {
+            $is_black_ip = true;
+        }
+        return $is_black_ip;
+    } /* }}} */
+
+    private static function is_ip_included($ip_data, $user_ip) /* {{{ */ {
+        $include = false;
+        if(is_string($ip_data) && strlen($ip_data)) {
+            $ip_data = str_replace("\r", "\n", $ip_data);
+            $ip_data = "\n" . $ip_data . "\n";
+            $include = strstr($ip_data, "\n" . $user_ip . "\n");
+        }
+
+        return $include;
+    } /* }}} */
+
+     /* {{{ 获取1级Ip列表
+     */
+    protected static function get_ip_data_level_1() {
+        $ip_data = array();
+        $file_name = Tool_WeiboConf::get("env.privdata_dir_referer") . self::DATA_FILE_LEVEL_1;
+        $ip_data = self::get_ip_file_data($file_name);
+        return $ip_data;
+    } /* }}} */
+
+    protected static function get_ip_data_level_2() /* {{{ */ {
+        $ip_data = array();
+        $file_name = Tool_WeiboConf::get("env.privdata_dir_referer") . self::DATA_FILE_LEVEL_2;
+        $ip_data = self::get_ip_file_data($file_name);
+        return $ip_data;
+    } /* }}} */
+
+     /* {{{ 获取文件的IP列表
+     * @param string $file_name
+     */
+    public function get_ip_file_data($file_name) {
+        $data = self::DATA_NONE;
+        if (file_exists($file_name)){
+            $file_data = file_get_contents($file_name);
+            if($file_data) {
+                $data = $file_data;
+            }
+        }
+        unset($file_data);
+        return $data;
+    } /* }}} */
+    
+
+    /**
+     * 对关键行为进行检查session server
+     * Enter description here ...
+     */
+    public function check_session($controller) {
+		$key = 'session_server.' . $controller;
+    	$check_session = Tool_WeiboConf::get($key);
+    	$check_session = $check_session ? TRUE : FALSE;
+    	return $check_session;
+    }
+
+    /**
+     * 验证访客用户，是否有访问权限
+     * 
+     * @param string $controller
+     * 
+     * @return boolean TRUE有权限，FALSE无访问权限
+     */
+    public function check_visitor_access($controller) {
+        $key = 'sso.visitor_login_access.' . $controller;
+        $access = Tool_WeiboConf::get($key);
+        $access = $access ? true : false;
+        return $access;
+    }
+    
+    /**
+     * 预登录用户，是否有访问权限
+     * 1. 白名单接口禁止访问
+     * 2. POST请求禁止访问
+     * 
+     * @param unknown_type $controller
+     */
+    public function check_prelogin_access($controller) {
+        //代理接口，黑名单接口禁止访问
+        if ($controller == "Aj_Proxy") {
+            $api = Comm_Context::param("api");
+            $api = rtrim($api, "?");
+            $blacklist = Tool_WeiboConf::get("sso_prelogin_ajproxy_blacklist");
+            if (in_array($api, $blacklist)) {
+                return false;
+            }
+        }
+        //黑名单接口禁止访问
+        $key = 'sso_prelogin_blacklist.' . $controller;
+        if (Tool_WeiboConf::get($key)) {
+            return false;
+        }
+        //规则，除了白名单接口，所有上行接口都限访问
+        if (Comm_Context::get_http_method() !== "POST") {
+            return true;
+        }
+        //预登录上行白名单接口不受限制
+        $key = 'sso_prelogin_whitelist.' . $controller;
+        if (Tool_WeiboConf::get($key)) {
+            return true;
+        }
+        return false;
+    }
+
+}

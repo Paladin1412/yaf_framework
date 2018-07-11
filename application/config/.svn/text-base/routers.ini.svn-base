@@ -1,0 +1,26 @@
+[routers]
+
+energy.type="rewrite"
+energy.match="/e/:energy_id"
+energy.route.controller=Index
+energy.route.action=index
+energy.map.1=energy_id
+
+energy_rule1.type="rewrite"
+energy_rule1.match="/e/:energy_id/index"
+energy_rule1.route.controller=Index
+energy_rule1.route.action=index
+energy_rule1.map.1=energy_id
+
+energy_rule.type="rewrite"
+energy_rule.match="/e/:energy_id/rule"
+energy_rule.route.controller=Rule
+energy_rule.route.action=index
+energy_rule.map.1=energy_id
+
+energy_fans.type="rewrite"
+energy_fans.match="/e/:energy_id/s/:star_uid"
+energy_fans.route.controller=Star
+energy_fans.route.action=index
+energy_fans.map.1=energy_id
+energy_fans.map.2 =star_id

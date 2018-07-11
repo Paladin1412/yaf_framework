@@ -1,0 +1,12 @@
+<div class="card m-panel card42">
+    <div class="card-wrap">
+         <div class="card-main">
+             <div class="m-box">
+                 <div class="box-left m-box-col m-box-center-a">
+                    <span class="link-text"><span class="main-link"><?=$card42_title?></span></span>
+                 </div>
+            </div>
+        </div>
+     </div>
+</div>
+

@@ -1,0 +1,17 @@
+
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<title><?=$title?></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<link rel="stylesheet" type="text/css" href="http://img.t.sinajs.cn/t4/appstyle/zt/css/Iqiyi_scream_h5/pages/index.css?version=<?=$g_version_css?>">
+	<script type="text/javascript" src="http://img.t.sinajs.cn/t4/appstyle/helpV41/script/h5/ios.js?version=<?=$g_version_js?>"></script>
+</head>
+<body class="cz_bang Z-body">
+<article class="cz_bang_conBox v_two">
+	<?=$rule?>
+</article>
+</body>
+</html>

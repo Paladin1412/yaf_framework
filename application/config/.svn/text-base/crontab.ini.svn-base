@@ -1,0 +1,76 @@
+;微博能量榜tv_energy
+[cli_filterfeeds]
+request_uri = "/cli_filterfeeds/index"
+time = "* * * * *"
+proc_total = "2"
+check_file = "/controllers/Cli/Filterfeeds.php"
+
+;处理需要追溯往期数据的选手列表
+[cli_retrstarsmain]
+request_uri = "/cli_retrstarsmain/index"
+time = "* * * * *"
+proc_total = "1"
+check_file = "/controllers/Cli/Retrstarsmain.php"
+ip_limit = "10.74.12.187"
+
+[cli_retrstarsproc]
+request_uri = "/cli_retrstarsproc/index"
+time = "* * * * *"
+proc_total = "4"
+check_file = "/controllers/Cli/Retrstarsproc.php"
+
+;定时更新能量值排名
+[cli_updaterank]
+request_uri = "/cli_updaterank/index"
+time = "0 * * * *"
+proc_total = "1"
+check_file = "/controllers/Cli/Updaterank.php"
+ip_limit = "10.72.15.147"
+
+;更新tauth
+[cli_refreshtauth]
+request_uri = "/cli_refreshtauth/index"
+time = "0 */6 * * *"
+proc_total = "1"
+check_file = "/controllers/Cli/Refreshtauth.php"
+ip_limit = "10.74.12.187"
+
+;更新app_token
+[cli_refreshapptoken]
+request_uri = "/cli_refreshapptoken/index"
+time = "0 */6 * * *"
+proc_total = "1"
+check_file = "/controllers/Cli/Refreshapptoken.php"
+ip_limit = "10.74.12.187"
+
+;更新对象库信息
+[cli_updateobject]
+request_uri = "/cli_updateobject/index"
+time = "30 * * * *"
+proc_total = "1"
+check_file = "/controllers/Cli/Updateobject.php"
+ip_limit = "10.72.15.147"
+
+;爱奇艺投票 更新对象库信息
+[cli_updateobjectiqiyi]
+request_uri = "/cli_updateobjectiqiyi/index"
+time = "*/5 * * * *"
+proc_total = "1"
+check_file = "/controllers/Cli/Updateobjectiqiyi.php"
+ip_limit = "10.72.15.147"
+
+;爱奇艺投票 更新tauth
+[cli_refreshtauthiqiyi]
+request_uri = "/cli_refreshtauthiqiyi/index"
+time = "0 */6 * * *"
+proc_total = "1"
+check_file = "/controllers/Cli/Refreshtauthiqiyi.php"
+ip_limit = "10.74.12.187"
+
+;爱奇艺投票 server数据同步
+[cli_Iqiyivotesync]
+request_uri = "/cli_iqiyivotesync/index"
+time = "* * * * *"
+proc_total = "2"
+check_file = "/controllers/Cli/Iqiyivotesync.php"
+ip_limit = "10.72.15.147"

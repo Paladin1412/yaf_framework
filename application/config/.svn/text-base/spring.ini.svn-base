@@ -1,0 +1,40 @@
+
+use_lazy_load = 1; //首页是否使用懒加载（懒加载策略：首页分3次加载，当浏览器滚动条距离底部20%的时候启动懒加载，第一次到春晚第一现场，第二次为整个段王爷模块，第三次为剩余部分）
+defalt_bg_img = '/static/images/new_year_2016/img-01.png'
+defalt_bg_img_https = '/static/images/new_year_2016/img-01.png'
+[ka]
+offical_uid = '3506728370';
+
+[stats]
+uicode = '40000080'
+sudakey = 'tblog_taichunwan_2016'
+
+[reduction] ;1=正常 0=降级
+send_weibo = 1 ;点评节目自动发微博
+like = 1 ;点赞
+hongbao_nation = 1 ; 发全民红包
+hongbao_member = 1 ; 发会员红包
+
+entry_duan = 1 ;段王爷二级页入口
+entry_mimilive = 1 ;微主播二级页入口
+entry_pa = 1 ;扒图君二级页入口
+entry_hongbao = 1 ;红包入口
+
+imgurl_https = 0 ; 图片地址
+feed_video = 1; 微博视频
+
+[nav]
+;吸底链接
+duan_url = 'http://m.weibo.cn/p/230989_spring2016'
+duan_scheme ='sinaweibo://cardlist?containerid=230989_spring2016'
+ba_url ='http://m.weibo.cn/p/230990_spring2016'
+ba_scheme ='sinaweibo://cardlist?containerid=230990_spring2016'
+mblog_url = 'http://m.weibo.cn/mblog'
+mblog_scheme = 'sinaweibo://sendweibo'
+live_url = 'http://weibo.com/p/2305780002_3810'
+live_scheme = 'sinaweibo://cardlist?containerid=2305780002_3810'
+hongbao_ext = 'http://chunjie.hongbao.weibo.com/springeve2016/h5?ref=chunwan'
+home = "http://2016.weibo.cn/"
+
+[text]
+default_mblog = "#春晚#"

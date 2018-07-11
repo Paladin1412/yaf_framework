@@ -1,0 +1,14 @@
+[pub_conf]
+
+mcq_stop = "mb_mcq_stop_%s_%s";mc key 用于通知进程结束($action_name,$idx)
+
+; mcq进程心跳文件路径($_SERVER['SINASRV_PRIVDATA_DIR'],$action_name,$idx)
+beat_file_path = "%s/mcq_beat/beat_%s_%s.tmp"
+beat_file_path_serial = "%s/mcq_beat/beat_%s_%s_%s.tmp"
+
+
+[mcq_list]
+
+
+
+

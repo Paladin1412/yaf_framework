@@ -1,0 +1,73 @@
+<section class="team_box" node-type="team_box">
+<?php foreach ($teams as $key => $team):?>
+<?php if ($key > 0) {
+$class_team_list = 'team_list_purple';
+} else {
+    $class_team_list = '';
+}
+if ($key < 5) {
+    $img_tit_tag = '<img src="http://img.t.sinajs.cn/t4/appstyle/zt/images/tv_challenge/top_num_' . ($key+1). '.png">';
+    
+} else {
+    $img_tit_tag = '';
+}
+?>
+    <div class="team_list <?=$class_team_list?>">
+            <!--  组头部 -->
+            <div class="team_topbar">
+                <div class="team_tit_tag">
+                    <!-- to_do_list 目前支持四队-->
+                    <i><?=$img_tit_tag?></i><!--数字代表1~4序号图片-->
+                    <span><?=$team['info']['name']?></span>
+                </div>
+                <div class="team_tit_info">
+                 <em>累计<?=$energy_info['energy_label']?></em>
+                 <span><?=Tool_Formatter_Number::number_decimal_one($team['energy_all'])?></span>
+                </div>
+            </div>
+            <!--  组头部  end -->
+            
+            
+            <!--  选手区 -->
+            <div class="team_cont">
+            <?php $p_count = 1; if (!empty($team['out']['rank'])) { $players_team = array_merge($team['in']['rank'] , $team['out']['rank']); } else {$players_team = $team['in']['rank'];} ?>
+            <?php foreach ($players_team as $key => $player):?>
+            <?php if ($p_count > 4) {$class_team_card_box = 'none'; } else {$class_team_card_box = '';}?>
+            <!-- 最多显示4个team_card_box -->
+                <div class="team_card_box" style="display:<?=$class_team_card_box?>" action-type="star_card" action-data="<?=$player['user_info']['star_uid']?>" >
+                    <div>
+                    <div class="m-img-box" action-type="weibo_url" action-data="/e/<?=$eid?>/s/<?=$player['user_info']['star_uid']?>" is-profile-suda="true">
+                            <img  node-type="star_pic" src="<?=$player['user_info']['user_info']['avatar_large']?>">
+                            <i class="<?=$player['user_info']['user_info']['verified_class']?>"></i>
+                            <?php if ($player['status'] == 'out'):?>
+                            <i class="state_off_line"><?php echo $energy_info['team_leave_star_label'];?></i>
+                            <?php endif;?>
+                        </div>
+                        <?php if ($player['status'] == 'in' || ($player['status'] == 'out' && $energy_info['end_still_count'] == 1)) :?>
+                        <div class="team_card_tag" action-type="weibo_url" action-data="/e/<?=$eid?>/s/<?=$player['user_info']['star_uid']?>">
+                        <?php else : ?>
+                        <div class="team_card_tag" >
+                        <?php endif;?>
+                            <em><?=$player['user_info']['user_info']['screen_name']?></em>
+                            <p><?=Tool_Formatter_Number::number_decimal_one($player['energy']) . $energy_info['energy_label']?></p>
+                        </div>
+                        <?php if ($player['status'] == 'in' || ($player['status'] == 'out' && $energy_info['end_still_count'] == 1)) :?>
+                        <span class="team_card_rig" action-type="team_card_rig" action-data="<?=$player['user_info']['star_uid']?>"><i>...</i></span>
+                        <?php endif;?>
+                    </div>
+                </div>
+        <?php $p_count++;?>
+        <?php endforeach;?>
+        </div>
+        
+        <!-- end team_count-->
+            <?php if ($p_count > 5):?>
+            <div class="team_card_btn" action-type="team_card_btn">
+            <p>全部<?=($p_count-1)?>人
+                <i class="m-font m-font-arrow-down"></i>
+            </p>
+           </div>
+           <?php endif;?>
+        </div>
+<?php endforeach;?>
+    </section>

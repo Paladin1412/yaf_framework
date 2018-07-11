@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<title><?=$title?></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<link rel="stylesheet" type="text/css" href="http://img.t.sinajs.cn/t4/appstyle/zt/css/Iqiyi_scream_h5/pages/index.css?version=<?=$g_version_css?>">
+	<script type="text/javascript" src="http://img.t.sinajs.cn/t4/appstyle/helpV41/script/h5/ios.js?version=<?=$g_version_js?>"></script>
+	<link rel="stylesheet" href="<?=$base_url['js']?>css/energy/swiper.min.css?version=<?=$g_version_js?>"><!--tv own-->
+	<style>
+		.swiper-container{ width:100%;}
+		.swiper-slide>a>img{width: 100%; height:auto; vertical-align: top; object-fit:cover;}
+		.swiper-pagination-bullet{
+			background: rgba(255, 255, 255, 0.23);
+			opacity: 1;
+		}
+		.swiper-pagination-bullet-active {
+			opacity: 1;
+			background: #fff;
+		}
+		.swiper-container-horizontal>.swiper-pagination-bullets, .swiper-pagination-custom, .swiper-pagination-fraction{ text-align: right;}
+	</style>
+</head>
+<body class="cz_bang">
+<article class="cz_bang_conBox v_two">
+	<?php if(!empty($brand_banner)){?>
+	<section class="cz_bang_banner">
+		<div class="card card22">
+			<div class="swiper-container">
+				<div class="swiper-wrapper" id="banner-div">
+					<?php foreach ($brand_banner as $k => $v){?>
+					<div class="swiper-slide">
+						<img data-index="<?=$k?>" data-url="<?=$v['url']?>" src="<?=$v['pic']?>">
+					</div>
+					<?php }?>
+				</div>
+				<div class="swiper-pagination"></div>
+			</div>
+		</div>
+	</section>
+	<?php }?>
+
+	<section class="cz_bang_title">
+		<div class="card card42">
+			<div class="card-wrap">
+				<div class="card-main">
+					<div class="m-box">
+						<div class="box-left m-box-col m-box-center-a">
+							<span class="link-text"><span class="main-link">每人每天有1次投票机会</span></span>
+						</div>
+						<div class="box-right m-box-center-a">
+							<ul class="header-c">
+								<li>
+									<a href="/iqiyivoterule">榜单规则</a><i>|</i>
+									<a href="javascript:;" class="weibo_scheme" id="topic_link" data-url="<?=$topic_url?>" data-scheme="<?=$topic_scheme?>">话题主页</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="cz_bang_con c-box-top">
+		<?php foreach ($users as $k => $user) { ?>
+		<div class="card m-panel card30 m-avatar-box">
+			<a href="javascript:;" ontouchstart>
+				<div class="card-wrap">
+					<div class="card-main">
+						<div class="m-box" node-type="user-card" data-scheme="<?=$user['scheme']?>" data-url="<?=$user['url']?>" data-oid="<?=$user[0]?>" data-repost-mid="<?=$user[4]?>" data-repost-text="<?=$user[5]?>">
+							<div class="m-icon-box m-box-dir m-box-center">
+								<dl>
+									<dt>
+										<?php if($k === 0){ ?>
+											<span class="bang_top1"><i></i></span>
+										<?php }elseif($k === 1){ ?>
+											<span class="bang_top2"><i></i></span>
+										<?php }elseif($k === 2){ ?>
+											<span class="bang_top3"><i></i></span>
+										<?php }else{ ?>
+											<span><i><?=$k+1?></i></span>
+										<?php } ?>
+									</dt>
+								</dl>
+							</div>
+							<div class="m-img-box">
+								<img src="<?=$user['profile_image_url']?>">
+								<i class="<?=$user['verified_class']?>"></i>
+							</div>
+							<div class="m-box-col m-box-dir m-box-center">
+								<div class="m-text-box">
+									<h3 class="m-text-cut"><?=$user['screen_name']?></h3>
+									<h4 class="m-text-cut"><?=$user['description']?></h4>
+									<h4 class="m-text-cut count-pos" data-count="<?=$user['count']?>"><?=$user['count']?>票</h4>
+								</div>
+							</div>
+							<div class="box-right m-box-center-a m-box-center m-btn-box vote-btn" node-type="vote-btn">
+								<div class="m-diy-btn m-box-col m-box-center m-box-center-a">
+									<img src="http://img.t.sinajs.cn/t4/appstyle/zt/images/Iqiyi_scream_h5/bangdan_icon.png">
+									<h4>投票</h4>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</a>
+		</div>
+		<?php } ?>
+	</section>
+	<section class="cz_bang_title IQ-tit c-box-top">
+		<div class="card card42">
+			<a href="javascript:;">
+				<div class="card-wrap">
+					<div class="card-main">
+						<div class="m-box">
+							<div class="box-left m-box-col m-box-center-a">
+								<span class="link-text"><span class="main-link">官方微博</span></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</a>
+		</div>
+	</section>
+	<section class="cz_bang_con cz_bang_bar c-box-top">
+		<?php foreach ($official_users as $user) { ?>
+		<div class="card m-panel card30 m-avatar-box">
+			<a href="javascript:;" ontouchstart>
+				<div class="card-wrap">
+					<div class="card-main" node-type="user-card" data-scheme="<?=$user['scheme']?>" data-url="<?=$user['url']?>" data-oid="<?=$user[0]?>">
+						<div class="m-box">
+							<div class="m-img-box">
+								<img src="<?=$user['profile_image_url']?>">
+								<i class="<?=$user['verified_class']?>"></i>
+							</div>
+							<div class="m-box-col m-box-dir m-box-center">
+								<div class="m-text-box">
+									<h3 class="m-text-cut"><?=$user['screen_name']?></h3>
+									<h4 class="m-text-cut Z-color-a"><?=$user['description']?></h4>
+									<h4 class="m-text-cut Z-color-b">粉丝 <?=($user['followers_count'] > 9999) ? (int) ($user['followers_count']/10000) .'万' : $user['followers_count'];?></h4>
+								</div>
+							</div>
+							<?php if($uid != $user['id']){ ?>
+							<div class="box-right m-box-center-a m-box-center m-btn-box" data-uid="<?=$user['id']?>" node-type="follow-btn">
+								<span class="m-add-box m-add-al">
+									<i class="m-font <?=empty($followed[$user['id']]) ? 'm-font-follow' : 'm-font-followed'?>"></i>
+									<h4><?=empty($followed[$user['id']]) ? '加关注' : '已关注'?></h4>
+								</span>
+							</div>
+							<?php } ?>
+						</div>
+					</div>
+				</div>
+			</a>
+		</div>
+		<?php } ?>
+	</section>
+	<section class="cz_bang_title IQ-tit G-footer c-box-line">
+		<div class="card card30 card42">
+			<a href="javascript:;" ontouchstart>
+				<div class="card-wrap">
+					<div class="card-main" id="iqiyi_url" data-action="<?=$iqiyi_url?>">
+						<div class="m-box">
+							<div class="box-left m-box-col m-box-center-a">
+								<span class="m-img-icon"><img src="http://img.t.sinajs.cn/t4/appstyle/zt/images/Iqiyi_scream_h5/bangdan_IQlogo.png"></span>
+								<span class="link-text"><span class="main-link">中国有嘻哈人气榜</span></span>
+							</div>
+							<div class="box-right m-box-center-a"><i class="m-font m-font-arrow-right"></i></div>
+						</div>
+					</div>
+				</div>
+			</a>
+		</div>
+	</section>
+</article>
+
+<section class="m-box-col m-box-center" style="display: none;" id="succ-diag">
+	<div class="dsk"></div>
+	<div class="m-popup">
+		<div class="m-box m-box-dir m-box-center">
+			<header>
+				<i class="m-font m-font-line-check"></i>
+			</header>
+			<h3 class="diag-msg">投票成功</h3>
+		</div>
+	</div>
+</section>
+
+<section class="m-box-col m-box-center" style="display: none;" id="fail-diag">
+	<div class="dsk"></div>
+	<div class="m-popup" style="top:10rem;">
+		<div class="m-box m-box-dir m-box-center">
+			<header>
+				<i class="m-font m-font-warn"></i>
+			</header>
+			<h3 class="diag-msg">明天再来投吧</h3>
+		</div>
+	</div>
+</section>
+<form id="repost-form" method="post" action="/reposttpl">
+	<input type="hidden" name="rt_text">
+	<input type="hidden" name="mid">
+	<input type="hidden" name="follow_uids" value="<?=$repost_uids?>">
+</form>
+
+
+</body>
+<script type="text/javascript"  data-valid="weibo_wb">
+    $CONFIG = {
+        server_time : "<?=time()?>",
+        uid : "<?=$uid?>",
+        uicode : "<?=$g_uicode?>",
+        suda_info : '<?=json_encode($suda_info)?>',
+        default_mid: "<?=$repost_mid?>",
+		default_text: "<?=$repost_text?>"
+    };
+
+    var SUDA = SUDA || [];
+    SUDA.push(["setGatherInfo", null, 'WEIBO-V5', "fuid:<?=$uid?>"]);
+</script>
+
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>js/jquery.js?version=<?=$g_version_js;?>"></script>
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>js/energy/swiper.js?version=<?=$g_version_js;?>"></script>
+<script data-main="1" type="text/javascript" charset="utf-8" src=" http://tjs.sjs.sinajs.cn/open/analytics/js/suda.js?version=<?php echo $g_version_js;?>"></script>
+
+<script data-main="1" type="application/javascript" src="<?=$base_url['js']?>js/energy/iqiyivote.js?version=<?=$g_version_js;?>"></script>
+
+
+</html>

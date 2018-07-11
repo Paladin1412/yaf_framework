@@ -1,0 +1,39 @@
+;COMMON CONFIG
+SINASRV_SERVER_NAME = "energy.tv.weibo.cn"
+SINASRV_SERVER_ROOT = "/data1/www/htdocs/energy.tv.weibo.cn"
+SINASRV_DATA_DIR = "/data1/www/data/energy.tv.weibo.cn/"
+SINASRV_CACHE_DIR = "/data1/www/cache/energy.tv.weibo.cn/"
+SINASRV_PRIVDATA_DIR = "/data1/www/privdata/energy.tv.weibo.cn/"
+SINASRV_APPLOGS_DIR = "/data1/www/applogs/energy.tv.weibo.cn/"
+SINASRV_DATA_URL = "http://energy.tv.weibo.cn/data"
+SINASRV_CACHE_URL = "http://energy.tv.weibo.cn/cache"
+SINASRV_MEMCACHED_KEY_PREFIX = "energy_tv_weibo-"
+WEIBO_ENV = "dev"
+SINASRV_ZONE_IDC = XD
+SINASRV_ZONE_ISP = CNC
+SINASRV_ZONE_ID = 010201
+
+SINASRV_PHP_BIN = "/usr/local/sinasrv2/bin/php"
+
+;MC
+SINASRV_MEMCACHED_TVENERGY_SERVER = "10.235.24.21:11211"
+SINASRV_MEMCACHED_TVENERGY_L0_SERVER = "127.0.0.1:6666"
+
+;DB
+
+SINASRV_DB_HOST   = "10.235.24.35"
+SINASRV_DB_PORT   = 3306
+SINASRV_DB_USER   = root
+SINASRV_DB_PASS   = 123456
+SINASRV_DB_NAME   = tvenergy
+SINASRV_DB_HOST_R = "10.235.24.35"
+SINASRV_DB_PORT_R  = 3306
+SINASRV_DB_USER_R  = root
+SINASRV_DB_PASS_R  = 123456
+SINASRV_DB_NAME_R  = tvenergy
+
+;REDIS
+SINASRV_REDIS_TVENERGY_HOST = "10.235.24.35"
+SINASRV_REDIS_TVENERGY_PORT = "6379"
+SINASRV_REDIS_TVENERGY_HOST_R = "10.235.24.35"
+SINASRV_REDIS_TVENERGY_PORT_R = "6379"

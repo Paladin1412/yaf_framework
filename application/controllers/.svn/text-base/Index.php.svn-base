@@ -1,0 +1,17 @@
+<?php
+/**
+ * 微博 能量榜
+ * @author xiaoli25 
+ */
+class IndexController extends AbstractController {
+    public $authorize = self::MAYBE_LOGIN;
+    public $init_viewer = true; 
+
+    public function indexAction() {
+        $energy_id = $this->getRequest()->getParam('energy_id');
+        Comm_Context::set('energy_id', $energy_id);
+        Comm_Context::set('is_pc',$this->is_pc);
+        $page = new Page_Index();
+        $this->render_page($page);
+    }
+}

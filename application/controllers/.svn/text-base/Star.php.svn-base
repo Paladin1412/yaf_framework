@@ -1,0 +1,19 @@
+<?php
+/**
+ * 能量榜二级页粉丝排行榜
+ * @author xiaoli25
+ */
+class StarController extends AbstractController {
+    public $authorize = self::MAYBE_LOGIN;
+    public $init_viewer = true;
+
+    public function indexAction() {
+        $energy_id = $this->getRequest()->getParam('energy_id');
+        $suid = $this->getRequest()->getParam('star_uid');
+        Comm_Context::set('energy_id',$energy_id);
+        Comm_Context::set('suid',$suid);
+        Comm_Context::set('is_pc',$this->is_pc);
+        $page = new Page_Star();
+        $this->render_page($page);
+    }
+}

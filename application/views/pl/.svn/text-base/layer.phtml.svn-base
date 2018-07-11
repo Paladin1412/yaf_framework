@@ -1,0 +1,200 @@
+<!-- 加油卡弹层 -->
+
+<section node-type="support_ok" style="display:none" class="layer_div">
+    <div class="m-dialog  m-bar-panel m-dialog-ad">
+        <header class="clearfix">
+            <?php if ($energy_info['spt_logo']):?>
+            <img  class="logo"  src="<?=$energy_info['spt_logo']?>">
+            <?php endif;?>
+            <span class="close" action-type="close"><i class="m-font m-font-line-close"></i></span>
+        </header>
+        <div class="ly_cont">
+            <div class="m-auto-box">
+                <div class="m-img-box" >
+                    <img src="<?=$cuser['user_info']['avatar_large']?>">
+                    <i class="<?=$cuser['user_info']['verified_class']?>"></i>
+                </div>
+                <div class="m-text-box">
+                    <h3 class="m-text-cut"><?=$cuser['user_info']['screen_name']?></h3>
+                </div>
+            </div>
+            <span class="point"></span>
+            <div class="m-auto-box" node-type="support_star" >
+                <div class="m-img-box">
+                    <img  node-type="star_img" src="">
+                    <i class="" node-type="star_verified_class"></i>
+                </div>
+                <div class="m-text-box">
+                    <h3 class="m-text-cut" node-type="star_name"></h3>
+                </div>
+            </div>
+            <div class="pay">
+                <div class="pay_cont">
+                    送给TA
+                    <div class="m-num">
+                        <span><i node-type="minus"  class="m-font m-font-minus"></i></span><input node-type="input_spt" type="tel" value="1"><span><i class="m-font m-font-plus"  node-type="plus"></i></span>
+                    </div>
+<?=$energy_info['spt_label']?>
+                </div>
+                <p node-type="spt_warn"><?=$energy_info['spt_inuse_text']?></p>
+            </div>
+        </div>
+        <div class="bar-btn">
+        <a href="javascript:;"  node-type="spt_share_btn" class="m-btn m-btn-block m-btn-orange" ontouchstart="">为TA<?=$energy_info['spt_btn_label']?></a>
+        </div>
+
+        <footer class="m-btm-btns m-box">
+            <div class="m-box" action-type="input_div">
+                <aside class="m-box-center-a">
+                    <label class="m-checkbox">
+                        <input type="checkbox" checked="" node-type="send_wb_check">
+                        <span><i class="m-font m-font-check"></i></span>
+                        <em>同时发微博喊粉丝团来助力</em>
+                    </label>
+                </aside>
+            </div>
+
+            <?php if (!empty($spt_follow_uids['screen_name'])):?>
+            <div class="m-box" action-type="input_div">
+                    <aside class="m-box-center-a">
+                            <label class="m-checkbox">
+                            <input type="checkbox" checked="" node-type="spt_follow_uids_check" data-uid="<?=$spt_follow_uids['id']?>">
+                                <span><i class="m-font m-font-check"></i></span>
+                                <em>同时关注@<?=$spt_follow_uids['screen_name']?></em>
+</label>
+                    </aside>
+            </div>
+            <?php endif;?>
+        </footer>
+    </div>
+</section>
+
+
+<!-- 机会用完 -->
+<section style="display:none" node-type="no_support" class="layer_div"> 
+    <div class="m-dialog  m-bar-panel">
+        <header class="clearfix">
+             <?php if ($energy_info['spt_logo']):?>
+            <img  class="logo"  src="<?=$energy_info['spt_logo']?>">
+            <?php endif;?>
+
+            <span class="close" action-type="close"><i class="m-font m-font-line-close"></i></span>
+        </header>
+        <div class="ly_cont ly_none">
+           <?php if ($energy_info['spt_ad_pic']):?>
+            <img  class="ly_bg"  src="<?=$energy_info['spt_ad_pic']?>">
+            <?php else:?>
+            <img class="ly_bg" src="<?=Tool_WeiboConf::get('energy.base_url.support_use_up_default_pic') . '?version=' . $g_version_css?>" >
+            <?php endif;?>
+            <p><?=$energy_info['spt_outuse_text']?></p>
+        </div>
+        <div class="bar-btn fans_numb_energy" action-data='<?=json_encode($spt_star)?>'>
+        <a href="javascript:;" action-type="sendwb_btn"  class="m-btn m-btn-block m-btn-orange" ontouchstart="">发微博,喊粉丝团来助力</a>
+        </div> 
+
+    </div>
+</section>
+
+    <!--  mask -->
+    <div class="m-mask layer_div" node-type="mask" style="display:none" ></div>
+    <!-- 提示弹层ok -->
+    <section class="m-box " style="margin-bottom:0.5rem"  >
+        <section class="m-box-col m-box-center layer_div" node-type="succ_pop11" style="display:none">
+            <div class="m-popup">
+                <div class="m-box m-box-dir m-box-center">
+                    <header>
+                        <i class="m-font m-font-line-check"></i>
+                    </header>
+                    <h3><?=$energy_info['spt_btn_label']?>成功</h3>
+                </div>
+            </div>
+        </section>
+
+    <!-- 提示弹层fail -->
+        <section class="m-box-col m-box-center layer_div" node-type="fail_pop" style="display:none">
+            <div class="m-popup">
+                <div class="m-box m-box-dir m-box-center">
+                    <header>
+                        <i class="m-font m-font-line-close" action-type="close"></i>
+                    </header>
+                    <h3><?=$energy_info['spt_btn_label']?>失败</h3>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <section class="m-box " >
+        <section class="m-box-col m-box-center layer_div" node-type="pop_layer"  style="display:none">
+            <!--popup开始-->
+            <div class="m-popup">
+                <div class="m-box m-box-dir m-box-center">
+                    <header>
+                        <i class="m-font m-font-warn"></i>
+                    </header>
+                    <h3>警告</h3>
+                </div>
+            </div>
+        </section>
+        <section class="m-box-col m-box-center layer_div" style="display:none">
+            <!--popup开始-->
+            <div class="m-popup">
+                <div class="m-box m-box-dir m-box-center">
+                    <header>
+                        <div class="m-loading m-loading-light"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    </header>
+                    <h3>loading</h3>
+                </div>
+            </div>
+        </section>
+    </section>
+
+<div class="team_popup team_popup_up layer_div" node-type="team_popup" style="top: 20%;display:none">
+            <div>
+                <span class="arr_ico" style="left: 30%;"></span>
+                <div class="team_popup_topbar">
+                    <em><?php echo $energy_info['team_spt_label'];?></em>
+                    <span class="team_popup_close" action-type="close"></span>
+                </div>
+                <div class="team_popup_btnlist">
+                    <span>
+                        <a href="javascript:;" class="m-btn m-btn-white m-add-box m-add-text m-add-al" ontouchstart="" action-type="pop_btn" action-data="send">
+						<i class="m-font m-team-send"></i><?=($isoppo ? '拍照' : '发微博')?>
+                        </a>
+                    </span>
+                    <span>
+                        <a href="javascript:;" class="m-btn m-btn-white m-add-box m-add-text m-add-al" ontouchstart="" action-type="pop_btn" action-data="rt">
+                            <i class="m-font m-team-forward"></i>去转发
+                        </a>
+                    </span>
+                    <!--
+                    <span>
+                        <a href="javascript:;" class="m-btn m-btn-white m-add-box m-add-text m-add-al" ontouchstart="">
+                            <i class="m-font m-team-search"></i>去搜索
+                        </a>
+                    </span>
+                    -->
+                    <span>
+                        <a href="javascript:;" class="m-btn m-btn-white m-add-box m-add-text m-add-al" ontouchstart="" action-type="pop_btn" action-data="spt">
+                            <i class="m-font m-team-cheer"></i><?=$energy_info['spt_btn_label']?>
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+
+
+<div class="u_popup layer_div" node-type="succ_pop"><!--动画加上add_animat-->
+        <?php if (!empty($energy_info['spt_ad_pic'])):?>
+        <div class="u_imgbox"><img src="<?=$energy_info['spt_ad_pic']?>"></div>
+        <?php endif;?>
+        <div class="u_info">
+            <h3><span><?=$energy_info['spt_btn_label']?>成功!</span></h3>
+            <div class="u_statusbar">
+                <span>
+                    <i></i>
+                </span>
+            </div>
+            <p class="u_star"></p>
+        </div>
+</div>

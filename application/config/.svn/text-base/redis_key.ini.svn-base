@@ -1,0 +1,37 @@
+emotions_phrase = 'ny2016_emotions_phrase'                  ;表情文案
+emotions_rplinfo = 'ny2016_emotions_rplinfo'                ;表情图片地址
+emotions_phrase_rplinfo = 'ny2016_emotions_phrase_rplinfo'  ;表情文案与图片地址的对应
+emotions_phrase_rplinfo_https = 'ny2016_emotions_phrase_rplinfo_https' ;表情文案与图片地址的对应
+
+users_need_check = 'ny2016_users_need_check'                ;需要检查质量等级的用户uid
+uquality_class = 'ny2016_uquality_class'                    ;存储用户的质量等级
+
+;tv_energy
+tvenergy_live_energys = 'tvenergy_live_energys'                             ;存储所有status=on的能量榜的简要信息 field:topic_name value:绑定的能量榜信息
+tvenergy_star_real_time_count = 'tvenergy_star_real_time_count_%u_%s'       ;存储选手的实时榜单数据 %u:eid %s:rt,spt,me
+tvenergy_fan_energy_times = 'tvenergy_fan_energy_times_%u_%u_%u_%u_%s'      ;存储某天粉丝支持的次数 %u:eid %u:suid %u:day %u:source %s:count_type
+fans_rank = 'tvenergy_fans_rank_%s_%s'  ;粉丝排行_energyid_staruid
+
+not_retrieve = 'tvenergy_not_retr'                                ;不需要追溯选手数据的能量榜列表
+retrieve_star= 'tvenergy_retrstar'                                ;star是否retrieve完成的标志
+retrieve_star_list = 'tvenergy_retrstar_list'                     ;取star mentions时的dispatch list
+retrieve_star_hash.disp = 'tvenergy_retrstar_disp'                ;star mentions分发的各个block是否完成的标志
+retrieve_star_hash.count = 'tvenergy_retrstar_count'              ;star mentions分发的block总数
+retrieve_star_hash.time = 'tvenergy_retrstar_time'                ;star mentions分发时间
+retrieve_star_hash.verify = 'tvenergy_retrstar_verify_%u_%u'      ;star mentions排重
+
+oppo_userin_times = 'tvenergy_oppo_userin_times_%u_%u'      ;存储oppo项目某天粉丝支持的次数 %u:eid %u:day
+oppo_inis = 'tvenergy_oppo_inis'                            ;存储oppo项目的配置信息
+;ad_config
+ad_config = 'tvenergy_ad_config'
+;oppo_user_times_old
+oppo_user_chance = 'tvenergy_oppo_user_chance_%s';
+oppo_pic_mentions_list = 'tvenergy_oppo_pic_mentions_list'
+;js_css_version
+js_css_version = 'tvenergy_js_css_version'
+
+;爱奇艺投票-中国有嘻哈
+iqiyivote_setting = 'iqiyivote_setting' ;投票信息
+iqiyivote_iqiyi_counts = 'iqiyivote_iqiyi_counts' ;爱奇艺总票数
+iqiyivote_wb_counts = 'iqiyivote_wb_counts' ;微博平台票数
+iqiyivote_u = 'iqiyivote_%s' ;每天的用户投票计数
